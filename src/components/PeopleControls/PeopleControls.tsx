@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SliderField from '../SliderField';
 import SplitControl from '../SplitControl';
 import type { Person } from '../../calc/types';
@@ -19,10 +19,21 @@ interface PeopleControlsProps {
 
 export default function PeopleControls({ state, update }: PeopleControlsProps) {
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const [focusNameOf, setFocusNameOf] = useState<{ id: string } | null>(null);
   const { people, currency } = state;
   const termMonths = state.termYears * 12;
   const money = (value: number) => formatCurrency(value, currency, { whole: true });
   const setPeople = (next: Person[]) => update((s) => ({ ...s, people: next }));
+
+  useEffect(() => {
+    if (focusNameOf) document.getElementById(`${focusNameOf.id}-name`)?.focus();
+  }, [focusNameOf]);
+
+  const handleAdd = () => {
+    const next = addPerson(state);
+    update(() => next);
+    setFocusNameOf({ id: next.people[next.people.length - 1].id });
+  };
 
   return (
     <section aria-labelledby="people-heading">
@@ -87,7 +98,7 @@ export default function PeopleControls({ state, update }: PeopleControlsProps) {
       </div>
       {people.length < MAX_PEOPLE && (
         <p>
-          <button type="button" onClick={() => update(addPerson)}>
+          <button type="button" onClick={handleAdd}>
             Add person
           </button>
         </p>

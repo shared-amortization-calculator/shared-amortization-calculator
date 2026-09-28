@@ -42,6 +42,10 @@ describe('addPerson', () => {
     const state = addPerson(removePerson(initialState(), 'p1'));
     expect(state.people.map((p) => p.id)).toEqual(['p2', 'p1']);
   });
+  it('gives a re-added person a default name nobody else has', () => {
+    const state = addPerson(removePerson(initialState(), 'p1'));
+    expect(state.people.map((p) => p.name)).toEqual(['Person 2', 'Person 1']);
+  });
 });
 
 describe('removePerson', () => {

@@ -47,3 +47,16 @@ test('negative values are clamped to the minimum', async ({ page }) => {
   await expect(rate).toHaveValue('0');
   await expect(page.getByTestId('monthly-payment')).toHaveText('£900.00');
 });
+
+test('interest rate and term are capped at their slider maximums', async ({ page }) => {
+  const rate = page.getByRole('spinbutton', { name: 'Interest rate (exact value)', exact: true });
+  await rate.fill('99');
+  await rate.blur();
+  await expect(rate).toHaveValue('15');
+
+  const term = page.getByRole('spinbutton', { name: 'Term (exact value)', exact: true });
+  await term.fill('400');
+  await term.blur();
+  await expect(term).toHaveValue('40');
+  await expect(page.getByTestId('payoff')).toHaveText('Year 40, month 12');
+});

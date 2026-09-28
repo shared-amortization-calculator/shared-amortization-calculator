@@ -30,11 +30,13 @@ export function buildLoanSchedule(inputs: MortgageInputs): LoanSchedule {
   const loanAmount = inputs.homePrice - inputs.downPayment;
   const payment = monthlyPayment(loanAmount, inputs.annualRatePercent, inputs.termYears);
   const i = inputs.annualRatePercent / 100 / 12;
+  const termMonths = inputs.termYears * 12;
   const months: LoanMonth[] = [];
   let balance = loanAmount;
   let month = 0;
 
-  while (balance >= PAID_OFF_THRESHOLD) {
+  // The term cap stops rounding at extreme rates from leaving the payment equal to the interest forever.
+  while (balance >= PAID_OFF_THRESHOLD && month < termMonths) {
     month += 1;
     const interest = balance * i;
     const regularPrincipal = Math.min(payment - interest, balance);

@@ -45,3 +45,41 @@ test('the paid-in table has a column pair per person', async ({ page }) => {
     await expect(table.getByRole('columnheader', { name: header })).toBeVisible();
   }
 });
+
+test('data tables handle people with the same name', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('console', (msg) => {
+    if (msg.type() === 'error') errors.push(msg.text());
+  });
+  await page.getByRole('textbox', { name: 'Name (person 1)' }).fill('Sam');
+  await page.getByRole('textbox', { name: 'Name (person 2)' }).fill('Sam');
+  await page.getByRole('button', { name: 'Show data table for Equity over time' }).click();
+  await expect(page.getByRole('table', { name: 'Equity by year' }).getByRole('columnheader', { name: 'Sam' })).toHaveCount(2);
+  expect(errors.filter((e) => e.includes('same key'))).toEqual([]);
+});
+
+test('paid-in chart labels do not overlap when people contribute equally', async ({ page }) => {
+  const figure = page.getByRole('figure', { name: 'Paid in versus equity' });
+  await expect(figure.locator('.end-label')).toHaveCount(4);
+  const boxes = await figure.locator('.end-label').evaluateAll((els) =>
+    els.map((el) => {
+      const r = el.getBoundingClientRect();
+      return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, text: el.textContent };
+    }),
+  );
+  for (let a = 0; a < boxes.length; a++) {
+    for (let b = a + 1; b < boxes.length; b++) {
+      const overlap =
+        boxes[a].left < boxes[b].right && boxes[b].left < boxes[a].right &&
+        boxes[a].top < boxes[b].bottom && boxes[b].top < boxes[a].bottom;
+      expect(overlap, `${boxes[a].text} overlaps ${boxes[b].text}`).toBe(false);
+    }
+  }
+});
+
+test('paid-in chart marks each person with a different marker shape', async ({ page }) => {
+  const figure = page.getByRole('figure', { name: 'Paid in versus equity' });
+  await expect(figure.locator('.person-marker--circle').first()).toBeAttached();
+  await expect(figure.locator('.person-marker--square').first()).toBeAttached();
+  await expect(figure.locator('.person-marker--triangle')).toHaveCount(0);
+});

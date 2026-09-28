@@ -76,3 +76,15 @@ test('mode-specific splits appear only for their mode', async ({ page }) => {
   await expect(principal).toBeVisible();
   await expect(ownership).toHaveCount(0);
 });
+
+test('adding a person moves focus to their name field', async ({ page }) => {
+  await page.getByRole('button', { name: 'Add person' }).click();
+  await expect(page.getByRole('textbox', { name: 'Name (person 3)' })).toBeFocused();
+});
+
+test('focus moves to the new name field every time a person is added', async ({ page }) => {
+  await page.getByRole('button', { name: 'Add person' }).click();
+  await page.getByRole('button', { name: 'Remove Person 3' }).click();
+  await page.getByRole('button', { name: 'Add person' }).click();
+  await expect(page.getByRole('textbox', { name: 'Name (person 3)' })).toBeFocused();
+});

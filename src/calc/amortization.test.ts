@@ -107,6 +107,13 @@ describe('buildLoanSchedule', () => {
     expect(schedule.months[0].closingBalance).toBeCloseTo(0, 9);
   });
 
+  it('always stops within the term, even when the payment barely covers interest', () => {
+    const schedule = buildLoanSchedule(
+      makeInputs({ homePrice: 300000, downPayment: 30000, annualRatePercent: 99, termYears: 40 }),
+    );
+    expect(schedule.months).toHaveLength(480);
+  });
+
   it('returns no months when there is no loan', () => {
     const schedule = buildLoanSchedule(makeInputs({ homePrice: 1000, downPayment: 1000 }));
     expect(schedule.loanAmount).toBe(0);

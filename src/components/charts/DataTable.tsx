@@ -20,8 +20,8 @@ export default function DataTable({ caption, rows, columns }: DataTableProps) {
         <thead>
           <tr>
             <th scope="col">When</th>
-            {columns.map((c) => (
-              <th key={c.header} scope="col">
+            {columns.map((c, index) => (
+              <th key={index} scope="col">
                 {c.header}
               </th>
             ))}
@@ -31,8 +31,8 @@ export default function DataTable({ caption, rows, columns }: DataTableProps) {
           {rows.map((row) => (
             <tr key={row.month}>
               <th scope="row">{formatMonth(row.month)}</th>
-              {columns.map((c) => (
-                <td key={c.header}>{c.value(row)}</td>
+              {columns.map((c, index) => (
+                <td key={index}>{c.value(row)}</td>
               ))}
             </tr>
           ))}

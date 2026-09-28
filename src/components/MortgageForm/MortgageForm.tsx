@@ -42,6 +42,7 @@ export default function MortgageForm({ state, onPatch }: MortgageFormProps) {
         value={state.annualRatePercent}
         min={0}
         sliderMax={15}
+        max={15}
         step={0.05}
         suffix="% a year"
         valueText={(v) => `${v} percent a year`}
@@ -52,6 +53,7 @@ export default function MortgageForm({ state, onPatch }: MortgageFormProps) {
         value={state.termYears}
         min={1}
         sliderMax={40}
+        max={40}
         step={1}
         integer
         suffix="years"

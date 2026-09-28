@@ -6,6 +6,7 @@ import ChartFigure, { type ChartProps } from './ChartFigure';
 import { contributedData, yearlyRows, yearTicks } from './chartData';
 import DataTable from './DataTable';
 import { endLabel } from './endLabel';
+import { personMarker } from './personMarker';
 import { GRID_COLOR, PAID_IN_DASH, PERSON_COLORS, TEXT_COLOR } from './theme';
 
 export default function ContributedVsEquity({ result, people, currency, animate }: ChartProps) {
@@ -29,7 +30,7 @@ export default function ContributedVsEquity({ result, people, currency, animate 
       summary={summary}
       chart={
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} accessibilityLayer={false} margin={{ top: 24, right: 16, bottom: 8, left: 16 }}>
+          <LineChart data={data} accessibilityLayer={false} margin={{ top: 56, right: 16, bottom: 8, left: 16 }}>
             <CartesianGrid stroke={GRID_COLOR} strokeDasharray="3 3" />
             <XAxis
               dataKey="month"
@@ -55,9 +56,9 @@ export default function ContributedVsEquity({ result, people, currency, animate 
                 stroke={PERSON_COLORS[k]}
                 strokeWidth={2}
                 strokeDasharray={PAID_IN_DASH}
-                dot={false}
+                dot={personMarker(k, lastIndex, PERSON_COLORS[k])}
                 isAnimationActive={animate}
-                label={endLabel(`${names[k]} paid in`, lastIndex, PERSON_COLORS[k])}
+                label={endLabel(`${names[k]} paid in`, lastIndex, PERSON_COLORS[k], -8 - 20 * k)}
               />,
               <Line
                 key={`${p.id}_equity`}
@@ -66,9 +67,9 @@ export default function ContributedVsEquity({ result, people, currency, animate 
                 name={`${names[k]} equity`}
                 stroke={PERSON_COLORS[k]}
                 strokeWidth={3}
-                dot={false}
+                dot={personMarker(k, lastIndex, PERSON_COLORS[k])}
                 isAnimationActive={animate}
-                label={endLabel(`${names[k]} equity`, lastIndex, PERSON_COLORS[k])}
+                label={endLabel(`${names[k]} equity`, lastIndex, PERSON_COLORS[k], 20 + 20 * k)}
               />,
             ])}
           </LineChart>

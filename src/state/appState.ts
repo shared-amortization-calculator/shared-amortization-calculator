@@ -15,10 +15,10 @@ export interface AppState {
   currency: CurrencyCode;
 }
 
-function createPerson(id: string, index: number): Person {
+function createPerson(id: string, name: string): Person {
   return {
     id,
-    name: `Person ${index + 1}`,
+    name,
     downPaymentShare: 1,
     paymentShare: 1,
     ownershipShare: 1,
@@ -34,7 +34,7 @@ export function initialState(): AppState {
     downPaymentPercent: 10,
     annualRatePercent: 4.5,
     termYears: 25,
-    people: equalizeShares([createPerson('p1', 0), createPerson('p2', 1)]),
+    people: equalizeShares([createPerson('p1', 'Person 1'), createPerson('p2', 'Person 2')]),
     equityMode: 'proportional',
     currency: 'GBP',
   };
@@ -43,9 +43,12 @@ export function initialState(): AppState {
 export function addPerson(state: AppState): AppState {
   if (state.people.length >= MAX_PEOPLE) return state;
   const id = PERSON_IDS.find((candidate) => !state.people.some((p) => p.id === candidate))!;
+  const taken = new Set(state.people.map((p, k) => displayName(p, k)));
+  let n = 1;
+  while (taken.has(`Person ${n}`)) n += 1;
   return {
     ...state,
-    people: equalizeShares([...state.people, createPerson(id, state.people.length)]),
+    people: equalizeShares([...state.people, createPerson(id, `Person ${n}`)]),
   };
 }
 
