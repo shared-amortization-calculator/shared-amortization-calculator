@@ -1,0 +1,46 @@
+import { test, expect } from '@playwright/test';
+
+test.beforeEach(async ({ page }) => {
+  await page.goto('./');
+});
+
+test('shows the disclaimer until dismissed, then remembers', async ({ page }) => {
+  const banner = page.getByRole('region', { name: 'Disclaimer' });
+  await expect(banner).toBeVisible();
+  await expect(banner).toContainText('For informational and educational purposes only.');
+
+  await banner.getByRole('button', { name: 'Dismiss' }).click();
+  await expect(banner).toHaveCount(0);
+  await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
+
+  await page.reload();
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Disclaimer' })).toHaveCount(0);
+});
+
+test('shows the warranty disclaimer in the footer', async ({ page }) => {
+  const footer = page.getByRole('contentinfo');
+  await expect(footer).toContainText('No warranty.');
+  await expect(footer).toContainText('provided "AS IS" and "AS AVAILABLE,"');
+});
+
+test('the currency selector changes displayed amounts', async ({ page }) => {
+  const currency = page.getByRole('combobox', { name: 'Currency' });
+  await expect(currency).toHaveValue('GBP');
+
+  await currency.selectOption('EUR');
+  await expect(page.getByTestId('monthly-payment')).toHaveText('€1,500.75');
+  await page.getByRole('button', { name: 'Show data table for Loan balance over time' }).click();
+  await expect(page.getByRole('table', { name: 'Loan balance by year' })).toContainText('€270,000.00');
+
+  await currency.selectOption('USD');
+  await expect(page.getByTestId('monthly-payment')).toHaveText('$1,500.75');
+});
+
+test('the skip link moves focus to the results', async ({ page }) => {
+  const skip = page.getByRole('link', { name: 'Skip to results' });
+  await skip.focus();
+  await expect(skip).toBeInViewport();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#results')).toBeFocused();
+});
