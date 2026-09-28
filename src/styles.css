@@ -99,6 +99,12 @@ select {
   background: var(--bg);
 }
 
+/* WebKit ignores min-height on native selects; an explicit em height keeps 44px and scales with text. */
+select {
+  appearance: menulist-button;
+  height: 2.75em;
+}
+
 input[type="range"] {
   width: 100%;
   min-height: 44px;
