@@ -27,7 +27,7 @@ export default defineConfig({
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
     // baseURL: 'http://localhost:3000',
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:5173/shared-amortization-calculator/',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -79,7 +79,7 @@ export default defineConfig({
   // },
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:5173', // or 3000 for CRA/Next
+    url: 'http://localhost:5173/shared-amortization-calculator/',
     reuseExistingServer: !process.env.CI,
   },
 });
