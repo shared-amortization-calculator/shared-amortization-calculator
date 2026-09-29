@@ -1,5 +1,5 @@
 import SliderField from '../SliderField';
-import { currencySymbol, formatCurrency } from '../../format';
+import { capitalize, currencySymbol, depositTerm, formatCurrency } from '../../format';
 import type { AppState } from '../../state/appState';
 
 interface MortgageFormProps {
@@ -10,6 +10,7 @@ interface MortgageFormProps {
 export default function MortgageForm({ state, onPatch }: MortgageFormProps) {
   const money = (value: number) => formatCurrency(value, state.currency, { whole: true });
   const deposit = (state.homePrice * state.downPaymentPercent) / 100;
+  const term = depositTerm(state.currency);
 
   return (
     <section aria-labelledby="mortgage-heading">
@@ -26,7 +27,7 @@ export default function MortgageForm({ state, onPatch }: MortgageFormProps) {
         onChange={(homePrice) => onPatch({ homePrice })}
       />
       <SliderField
-        label="Down payment"
+        label={capitalize(term)}
         value={state.downPaymentPercent}
         min={0}
         sliderMax={99.5}
@@ -34,7 +35,7 @@ export default function MortgageForm({ state, onPatch }: MortgageFormProps) {
         step={0.5}
         suffix="%"
         valueText={(v) => `${v} percent, ${money((state.homePrice * v) / 100)}`}
-        hint={`${money(deposit)} deposit, ${money(state.homePrice - deposit)} loan`}
+        hint={`${money(deposit)} ${term}, ${money(state.homePrice - deposit)} loan`}
         onChange={(downPaymentPercent) => onPatch({ downPaymentPercent })}
       />
       <SliderField

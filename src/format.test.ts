@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { currencySymbol, formatCurrency, formatMonth, formatPercent } from './format';
+import { capitalize, currencySymbol, depositTerm, formatCurrency, formatMonth, formatPercent } from './format';
 
 describe('formatCurrency', () => {
   it('formats pounds, dollars and euros to the penny', () => {
@@ -26,6 +26,20 @@ describe('currencySymbol', () => {
     expect(currencySymbol('GBP')).toBe('£');
     expect(currencySymbol('USD')).toBe('$');
     expect(currencySymbol('EUR')).toBe('€');
+  });
+});
+
+describe('depositTerm', () => {
+  it('says deposit for pounds and euros and down payment for dollars', () => {
+    expect(depositTerm('GBP')).toBe('deposit');
+    expect(depositTerm('EUR')).toBe('deposit');
+    expect(depositTerm('USD')).toBe('down payment');
+  });
+});
+
+describe('capitalize', () => {
+  it('upper-cases only the first letter', () => {
+    expect(capitalize('down payment')).toBe('Down payment');
   });
 });
 

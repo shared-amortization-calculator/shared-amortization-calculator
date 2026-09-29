@@ -1,13 +1,14 @@
 import SplitControl from '../SplitControl';
 import type { EquityMode, Person } from '../../calc/types';
+import { capitalize, depositTerm } from '../../format';
 import type { AppState } from '../../state/appState';
 
-const MODES: { mode: EquityMode; label: string; description: string }[] = [
+const modes = (term: string): { mode: EquityMode; label: string; description: string }[] => [
   {
     mode: 'proportional',
     label: 'Proportional to money paid in',
     description:
-      "Each person's share of the equity matches their share of all the money paid in so far, including the deposit and interest.",
+      `Each person's share of the equity matches their share of all the money paid in so far, including the ${term} and interest.`,
   },
   {
     mode: 'fixed',
@@ -16,13 +17,13 @@ const MODES: { mode: EquityMode; label: string; description: string }[] = [
   },
   {
     mode: 'depositBaseline',
-    label: 'Deposit, plus principal each person repays',
-    description: 'Each person owns their deposit plus the loan they have repaid. Interest does not count.',
+    label: `${capitalize(term)}, plus principal each person repays`,
+    description: `Each person owns their ${term} plus the loan they have repaid. Interest does not count.`,
   },
   {
     mode: 'lockedDeposit',
-    label: 'Deposit locked in, remaining loan split by fixed shares',
-    description: 'Each person owns their deposit. The loan repaid is split by fixed shares you set.',
+    label: `${capitalize(term)} locked in, remaining loan split by fixed shares`,
+    description: `Each person owns their ${term}. The loan repaid is split by fixed shares you set.`,
   },
 ];
 
@@ -39,7 +40,7 @@ export default function EquityModeSelector({ state, update }: EquityModeSelector
       <h2 id="equity-heading">How equity is shared</h2>
       <fieldset>
         <legend>Equity rule</legend>
-        {MODES.map(({ mode, label, description }) => {
+        {modes(depositTerm(state.currency)).map(({ mode, label, description }) => {
           const id = `mode-${mode}`;
           return (
             <div key={mode} className="radio-option">

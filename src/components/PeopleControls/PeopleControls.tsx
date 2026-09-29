@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import SliderField from '../SliderField';
 import SplitControl from '../SplitControl';
 import type { Person } from '../../calc/types';
-import { currencySymbol, formatCurrency, formatMonth } from '../../format';
+import { capitalize, currencySymbol, depositTerm, formatCurrency, formatMonth } from '../../format';
 import {
   addPerson,
   displayName,
@@ -103,7 +103,7 @@ export default function PeopleControls({ state, update }: PeopleControlsProps) {
           </button>
         </p>
       )}
-      <SplitControl legend="Down payment split" people={people} shareKey="downPaymentShare" onChange={setPeople} />
+      <SplitControl legend={`${capitalize(depositTerm(currency))} split`} people={people} shareKey="downPaymentShare" onChange={setPeople} />
       <SplitControl legend="Monthly payment split" people={people} shareKey="paymentShare" onChange={setPeople} />
     </section>
   );

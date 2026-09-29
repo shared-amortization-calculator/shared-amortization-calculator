@@ -19,11 +19,11 @@ test('removing a person moves focus to the People heading', async ({ page }) => 
   await expect(personCards(page)).toHaveCount(1);
   await expect(page.getByRole('button', { name: /^Remove/ })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'People', exact: true })).toBeFocused();
-  await expect(page.getByRole('group', { name: 'Down payment split' })).toContainText('Person 1: 100%');
+  await expect(page.getByRole('group', { name: 'Deposit split' })).toContainText('Person 1: 100%');
 });
 
 test('the last person gets the remainder of a split', async ({ page }) => {
-  const split = page.getByRole('group', { name: 'Down payment split' });
+  const split = page.getByRole('group', { name: 'Deposit split' });
   await split.getByRole('spinbutton', { name: 'Person 1 share (exact value)' }).fill('70');
   await expect(split).toContainText('Person 2 share: 30% (the remainder)');
 });
@@ -39,7 +39,7 @@ test('a split cannot exceed 100%', async ({ page }) => {
 });
 
 test('adding a person resets splits to equal shares', async ({ page }) => {
-  const split = page.getByRole('group', { name: 'Down payment split' });
+  const split = page.getByRole('group', { name: 'Deposit split' });
   await split.getByRole('spinbutton', { name: 'Person 1 share (exact value)' }).fill('70');
   await page.getByRole('button', { name: 'Add person' }).click();
   await expect(split.getByRole('spinbutton', { name: 'Person 1 share (exact value)' })).toHaveValue('33.33');
@@ -50,7 +50,7 @@ test('renaming a person updates labels, and a blank name falls back', async ({ p
   const name = page.getByRole('textbox', { name: 'Name (person 1)' });
   await name.fill('Alex');
   await expect(page.getByRole('heading', { name: 'Alex', exact: true })).toBeVisible();
-  await expect(page.getByRole('group', { name: 'Down payment split' }).getByRole('slider', { name: 'Alex share' })).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Deposit split' }).getByRole('slider', { name: 'Alex share' })).toBeVisible();
   await name.fill('');
   await expect(page.getByRole('heading', { name: 'Person 1', exact: true })).toBeVisible();
 });

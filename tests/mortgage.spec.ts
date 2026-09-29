@@ -10,7 +10,7 @@ test('shows headline figures for the default mortgage', async ({ page }) => {
   await expect(page.getByTestId('payoff')).toHaveText('Year 25, month 12');
 });
 
-test('shows the deposit and loan amounts for the down payment', async ({ page }) => {
+test('shows the deposit and loan amounts', async ({ page }) => {
   await expect(page.getByText('£30,000 deposit, £270,000 loan')).toBeVisible();
 });
 
@@ -59,4 +59,24 @@ test('interest rate and term are capped at their slider maximums', async ({ page
   await term.blur();
   await expect(term).toHaveValue('40');
   await expect(page.getByTestId('payoff')).toHaveText('Year 40, month 12');
+});
+
+test('uses deposit for pounds and euros and down payment for dollars', async ({ page }) => {
+  const currency = page.getByRole('combobox', { name: 'Currency' });
+  const expectTerm = async (label: string, lower: string, symbol: string) => {
+    await expect(page.getByRole('slider', { name: label, exact: true })).toBeVisible();
+    await expect(page.getByText(`${symbol}30,000 ${lower}, ${symbol}270,000 loan`)).toBeVisible();
+    await expect(page.getByRole('group', { name: `${label} split` })).toBeVisible();
+    await expect(page.getByRole('radio', { name: `${label}, plus principal each person repays` })).toBeVisible();
+    await expect(page.getByRole('radio', { name: `${label} locked in, remaining loan split by fixed shares` })).toBeVisible();
+    await expect(page.getByText(`Each person owns their ${lower}. The loan repaid`)).toBeVisible();
+  };
+
+  await expectTerm('Deposit', 'deposit', '£');
+  await currency.selectOption('USD');
+  await expectTerm('Down payment', 'down payment', '$');
+  await expect(page.getByText(/deposit/i)).toHaveCount(0);
+  await currency.selectOption('EUR');
+  await expectTerm('Deposit', 'deposit', '€');
+  await expect(page.getByText(/down payment/i)).toHaveCount(0);
 });

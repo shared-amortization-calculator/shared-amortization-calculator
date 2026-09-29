@@ -32,6 +32,14 @@ export function currencySymbol(currency: CurrencyCode): string {
     .find((part) => part.type === 'currency')!.value;
 }
 
+export function depositTerm(currency: CurrencyCode): string {
+  return currency === 'USD' ? 'down payment' : 'deposit';
+}
+
+export function capitalize(text: string): string {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 export function formatMonth(month: number): string {
   if (month === 0) return 'Start';
   const year = Math.floor((month - 1) / 12) + 1;
