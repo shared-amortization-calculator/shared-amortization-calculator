@@ -61,6 +61,17 @@ test('the currency selector changes displayed amounts', async ({ page }) => {
   await expect(page.getByTestId('monthly-payment')).toHaveText('$1,500.75');
 });
 
+test('the currency selector draws its own arrow with room beside the border', async ({ page }) => {
+  // Native arrows differ by browser, and Chrome's sits against the border.
+  const style = await page.getByRole('combobox', { name: 'Currency' }).evaluate((el) => {
+    const s = getComputedStyle(el);
+    return { appearance: s.appearance, image: s.backgroundImage, paddingRight: parseFloat(s.paddingRight) };
+  });
+  expect(style.appearance).toBe('none');
+  expect(style.image).toContain('svg');
+  expect(style.paddingRight).toBeGreaterThanOrEqual(32);
+});
+
 test('the skip link moves focus to the results', async ({ page }) => {
   const skip = page.getByRole('link', { name: 'Skip to results' });
   await skip.focus();

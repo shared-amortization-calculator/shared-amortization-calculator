@@ -99,10 +99,16 @@ select {
   background: var(--surface);
 }
 
-/* WebKit ignores min-height on native selects; an explicit em height keeps 44px and scales with text. */
+/* WebKit ignores min-height on native selects; an explicit em height keeps 44px and scales with text.
+   Native arrows differ by browser (Chrome's sits against the border), so draw our own in the text colour. */
 select {
-  appearance: menulist-button;
+  appearance: none;
   height: 2.75em;
+  padding-right: 2.25rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 0.75rem auto;
 }
 
 input[type="range"] {
