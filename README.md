@@ -1,9 +1,9 @@
-# shared-amortization-calculator
+# Mortgage Split
 
 ## Disclaimer and Terms of Use
 
 **For informational and educational purposes only.**
-Shared Amortization Calculator is a calculation tool.
+Mortgage Split is a calculation tool.
 Its outputs are estimates based on the
 inputs and assumptions you provide. They are not financial, investment, tax,
 accounting, or legal advice, and nothing in this project is a recommendation

@@ -50,7 +50,7 @@ export default function App() {
       </a>
       <DisclaimerBanner />
       <header className="site-header page">
-        <h1 id="app-title">Shared Amortization Calculator</h1>
+        <h1 id="app-title">Mortgage Split</h1>
         <div className="header-controls">
           <CurrencySelector value={state.currency} onChange={(currency) => patch({ currency })} />
           <ShareControls shareUrl={shareUrl} onReset={reset} />

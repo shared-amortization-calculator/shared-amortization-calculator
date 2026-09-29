@@ -1,7 +1,7 @@
 {
   "name": "shared-amortization-calculator",
   "version": "1.0.0",
-  "description": "**For informational and educational purposes only.** Shared Amortization Calculator is a calculation tool. Its outputs are estimates based on the inputs and assumptions you provide. They are not financial, investment, tax, accounting, or legal advice, and nothing in this project is a recommendation to buy, sell, or hold any financial product or to take any particular course of action. Consult a qualified professional before making financial decisions.",
+  "description": "**For informational and educational purposes only.** Mortgage Split is a calculation tool. Its outputs are estimates based on the inputs and assumptions you provide. They are not financial, investment, tax, accounting, or legal advice, and nothing in this project is a recommendation to buy, sell, or hold any financial product or to take any particular course of action. Consult a qualified professional before making financial decisions.",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -20,7 +20,7 @@
   "bugs": {
     "url": "https://github.com/shared-amortization-calculator/shared-amortization-calculator/issues"
   },
-  "homepage": "https://github.com/shared-amortization-calculator/shared-amortization-calculator#readme",
+  "homepage": "https://mortgage-split.org/",
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.63.0",
