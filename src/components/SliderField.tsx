@@ -43,7 +43,7 @@ export default function SliderField({
   return (
     <div className="slider-field">
       <label htmlFor={id}>{label}</label>
-      <div className="slider-field__controls">
+      <div className={after ? 'slider-field__controls slider-field__controls--paired' : 'slider-field__controls'}>
         <input
           id={id}
           type="range"
