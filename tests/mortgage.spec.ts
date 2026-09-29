@@ -14,6 +14,25 @@ test('shows the deposit and loan amounts', async ({ page }) => {
   await expect(page.getByText('£30,000 deposit, £270,000 loan')).toBeVisible();
 });
 
+test('typing a deposit amount sets the deposit percentage', async ({ page }) => {
+  await page.getByRole('spinbutton', { name: 'Deposit amount' }).fill('60000');
+  await expect(page.getByRole('spinbutton', { name: 'Deposit (exact value)' })).toHaveValue('20');
+  await expect(page.getByText('£60,000 deposit, £240,000 loan')).toBeVisible();
+});
+
+test('changing the deposit percentage updates the deposit amount', async ({ page }) => {
+  await page.getByRole('spinbutton', { name: 'Deposit (exact value)' }).fill('25');
+  await expect(page.getByRole('spinbutton', { name: 'Deposit amount' })).toHaveValue('75000');
+});
+
+test('a deposit amount above the maximum is capped at 99.5 percent', async ({ page }) => {
+  const amount = page.getByRole('spinbutton', { name: 'Deposit amount' });
+  await amount.fill('400000');
+  await amount.blur();
+  await expect(amount).toHaveValue('298500');
+  await expect(page.getByRole('spinbutton', { name: 'Deposit (exact value)' })).toHaveValue('99.5');
+});
+
 test('changing the term updates the payoff month', async ({ page }) => {
   await page.getByRole('spinbutton', { name: 'Term (exact value)', exact: true }).fill('20');
   await expect(page.getByTestId('payoff')).toHaveText('Year 20, month 12');

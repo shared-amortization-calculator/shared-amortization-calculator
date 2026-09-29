@@ -1,7 +1,11 @@
 import NumberField from '../NumberField';
+import NumberInput from '../NumberInput';
 import SliderField from '../SliderField';
 import { capitalize, currencySymbol, depositTerm, formatCurrency } from '../../format';
 import type { AppState } from '../../state/appState';
+import { shareFromAmount } from '../../state/splits';
+
+const MAX_DEPOSIT_PERCENT = 99.5;
 
 interface MortgageFormProps {
   state: AppState;
@@ -38,13 +42,27 @@ export default function MortgageForm({ state, onPatch }: MortgageFormProps) {
         label={capitalize(term)}
         value={state.downPaymentPercent}
         min={0}
-        sliderMax={99.5}
-        max={99.5}
+        sliderMax={MAX_DEPOSIT_PERCENT}
+        max={MAX_DEPOSIT_PERCENT}
         step={0.5}
         suffix="%"
-        valueText={(v) => `${v} percent, ${money((state.homePrice * v) / 100)}`}
+        valueText={(v) => `${Number(v.toFixed(2))} percent, ${money((state.homePrice * v) / 100)}`}
         hint={`${money(deposit)} ${term}, ${money(loan)} loan`}
         onChange={(downPaymentPercent) => onPatch({ downPaymentPercent })}
+        after={
+          <NumberInput
+            value={deposit}
+            min={0}
+            max={(state.homePrice * MAX_DEPOSIT_PERCENT) / 100}
+            prefix={currencySymbol(state.currency)}
+            prefixId="deposit-amount-prefix"
+            ariaLabel={`${capitalize(term)} amount`}
+            onChange={(amount) => {
+              const fraction = shareFromAmount(amount, state.homePrice);
+              if (fraction !== null) onPatch({ downPaymentPercent: fraction * 100 });
+            }}
+          />
+        }
       />
       <SliderField
         label="Interest rate"
