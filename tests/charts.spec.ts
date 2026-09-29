@@ -77,9 +77,24 @@ test('paid-in chart labels do not overlap when people contribute equally', async
   }
 });
 
-test('paid-in chart marks each person with a different marker shape', async ({ page }) => {
+test('paid-in chart legend shows dashed icons for paid in and solid icons for equity', async ({ page }) => {
+  const legend = page.getByRole('figure', { name: 'Paid in versus equity' }).locator('.recharts-legend-wrapper');
+  const paidIn = legend.locator('.recharts-legend-item', { hasText: 'paid in' });
+  const equity = legend.locator('.recharts-legend-item', { hasText: 'equity' });
+  await expect(paidIn).toHaveCount(2);
+  await expect(equity).toHaveCount(2);
+  for (const item of await paidIn.all()) {
+    await expect(item.locator('svg line')).toHaveAttribute('stroke-dasharray', '6 4');
+  }
+  for (const item of await equity.all()) {
+    await expect(item.locator('svg line')).toHaveCount(1);
+    await expect(item.locator('svg line')).not.toHaveAttribute('stroke-dasharray', /./);
+  }
+});
+
+test('paid-in chart draws lines without point markers', async ({ page }) => {
   const figure = page.getByRole('figure', { name: 'Paid in versus equity' });
-  await expect(figure.locator('.person-marker--circle').first()).toBeAttached();
-  await expect(figure.locator('.person-marker--square').first()).toBeAttached();
-  await expect(figure.locator('.person-marker--triangle')).toHaveCount(0);
+  await expect(figure.locator('.recharts-line')).toHaveCount(4);
+  await expect(figure.locator('.recharts-line-dots')).toHaveCount(0);
+  await expect(figure.locator('.recharts-line-dot')).toHaveCount(0);
 });

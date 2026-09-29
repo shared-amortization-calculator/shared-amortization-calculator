@@ -6,7 +6,6 @@ import ChartFigure, { type ChartProps } from './ChartFigure';
 import { contributedData, yearlyRows, yearTicks } from './chartData';
 import DataTable from './DataTable';
 import { endLabel } from './endLabel';
-import { personMarker } from './personMarker';
 import { GRID_COLOR, PAID_IN_DASH, PERSON_COLORS, TEXT_COLOR } from './theme';
 
 export default function ContributedVsEquity({ result, people, currency, animate }: ChartProps) {
@@ -56,7 +55,8 @@ export default function ContributedVsEquity({ result, people, currency, animate 
                 stroke={PERSON_COLORS[k]}
                 strokeWidth={2}
                 strokeDasharray={PAID_IN_DASH}
-                dot={personMarker(k, lastIndex, PERSON_COLORS[k])}
+                dot={false}
+                legendType="plainline"
                 isAnimationActive={animate}
                 label={endLabel(`${names[k]} paid in`, lastIndex, PERSON_COLORS[k], -8 - 20 * k)}
               />,
@@ -67,7 +67,8 @@ export default function ContributedVsEquity({ result, people, currency, animate 
                 name={`${names[k]} equity`}
                 stroke={PERSON_COLORS[k]}
                 strokeWidth={3}
-                dot={personMarker(k, lastIndex, PERSON_COLORS[k])}
+                dot={false}
+                legendType="plainline"
                 isAnimationActive={animate}
                 label={endLabel(`${names[k]} equity`, lastIndex, PERSON_COLORS[k], 20 + 20 * k)}
               />,
