@@ -7,6 +7,9 @@ test.beforeEach(async ({ page }) => {
 const personCards = (page: import('@playwright/test').Page) =>
   page.getByRole('group', { name: /^Person \d$/ });
 
+const personCard = (page: import('@playwright/test').Page, name: string) =>
+  page.getByRole('group', { name, exact: true });
+
 test('starts with two people and allows up to three', async ({ page }) => {
   await expect(personCards(page)).toHaveCount(2);
   await page.getByRole('button', { name: 'Add person' }).click();
@@ -47,7 +50,7 @@ test('adding a person resets splits to equal shares', async ({ page }) => {
 });
 
 test('renaming a person updates labels, and a blank name falls back', async ({ page }) => {
-  const name = page.getByRole('textbox', { name: 'Name (person 1)' });
+  const name = page.getByRole('textbox', { name: 'Name', exact: true }).first();
   await name.fill('Alex');
   await expect(page.getByRole('heading', { name: 'Alex', exact: true })).toBeVisible();
   await expect(page.getByRole('group', { name: 'Deposit split' }).getByRole('slider', { name: 'Alex share' })).toBeVisible();
@@ -56,7 +59,7 @@ test('renaming a person updates labels, and a blank name falls back', async ({ p
 });
 
 test('an overpayment shortens the mortgage', async ({ page }) => {
-  await page.getByRole('spinbutton', { name: 'Person 1: overpayment per month (exact value)' }).fill('200');
+  await personCard(page, 'Person 1').getByRole('spinbutton', { name: 'Overpayment per month (exact value)', exact: true }).fill('200');
   await expect(page.getByTestId('payoff')).toHaveText('Year 21, month 2');
   await expect(page.getByTestId('total-interest')).toHaveText('£141,068.97');
 });
@@ -79,12 +82,20 @@ test('mode-specific splits appear only for their mode', async ({ page }) => {
 
 test('adding a person moves focus to their name field', async ({ page }) => {
   await page.getByRole('button', { name: 'Add person' }).click();
-  await expect(page.getByRole('textbox', { name: 'Name (person 3)' })).toBeFocused();
+  await expect(personCard(page, 'Person 3').getByRole('textbox', { name: 'Name', exact: true })).toBeFocused();
 });
 
 test('focus moves to the new name field every time a person is added', async ({ page }) => {
   await page.getByRole('button', { name: 'Add person' }).click();
   await page.getByRole('button', { name: 'Remove Person 3' }).click();
   await page.getByRole('button', { name: 'Add person' }).click();
-  await expect(page.getByRole('textbox', { name: 'Name (person 3)' })).toBeFocused();
+  await expect(personCard(page, 'Person 3').getByRole('textbox', { name: 'Name', exact: true })).toBeFocused();
+});
+
+test('person card fields are labelled without repeating the person', async ({ page }) => {
+  const card = personCard(page, 'Person 2');
+  await expect(card.getByRole('textbox', { name: 'Name', exact: true })).toBeVisible();
+  await expect(card.getByRole('slider', { name: 'Overpayment per month', exact: true })).toBeVisible();
+  await expect(card.getByRole('slider', { name: 'Overpayments start in month', exact: true })).toBeVisible();
+  await expect(card.getByText(/Person 2:|\(person 2\)/)).toHaveCount(0);
 });

@@ -49,7 +49,7 @@ export default function PeopleControls({ state, update }: PeopleControlsProps) {
             <div key={person.id} className="person-card" role="group" aria-labelledby={headingId}>
               <h3 id={headingId}>{name}</h3>
               <div className="text-field">
-                <label htmlFor={nameId}>Name (person {index + 1})</label>
+                <label htmlFor={nameId}>Name</label>
                 <input
                   id={nameId}
                   type="text"
@@ -59,7 +59,7 @@ export default function PeopleControls({ state, update }: PeopleControlsProps) {
                 />
               </div>
               <SliderField
-                label={`${name}: overpayment per month`}
+                label="Overpayment per month"
                 value={person.overpaymentMonthly}
                 min={0}
                 sliderMax={2000}
@@ -69,7 +69,7 @@ export default function PeopleControls({ state, update }: PeopleControlsProps) {
                 onChange={(v) => update((s) => updatePerson(s, person.id, { overpaymentMonthly: v }))}
               />
               <SliderField
-                label={`${name}: overpayments start in month`}
+                label="Overpayments start in month"
                 value={person.overpaymentStartMonth}
                 min={1}
                 sliderMax={termMonths}

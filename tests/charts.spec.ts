@@ -51,8 +51,8 @@ test('data tables handle people with the same name', async ({ page }) => {
   page.on('console', (msg) => {
     if (msg.type() === 'error') errors.push(msg.text());
   });
-  await page.getByRole('textbox', { name: 'Name (person 1)' }).fill('Sam');
-  await page.getByRole('textbox', { name: 'Name (person 2)' }).fill('Sam');
+  await page.getByRole('group', { name: 'Person 1', exact: true }).getByRole('textbox', { name: 'Name', exact: true }).fill('Sam');
+  await page.getByRole('group', { name: 'Person 2', exact: true }).getByRole('textbox', { name: 'Name', exact: true }).fill('Sam');
   await page.getByRole('button', { name: 'Show data table for Equity over time' }).click();
   await expect(page.getByRole('table', { name: 'Equity by year' }).getByRole('columnheader', { name: 'Sam' })).toHaveCount(2);
   expect(errors.filter((e) => e.includes('same key'))).toEqual([]);
