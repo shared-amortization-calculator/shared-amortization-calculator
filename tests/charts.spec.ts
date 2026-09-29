@@ -4,7 +4,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto('./');
 });
 
-const FIGURES = ['Equity over time', 'Loan balance over time', 'Paid in versus equity'];
+const FIGURES = ['Paid in versus equity', 'Equity over time', 'Loan balance over time'];
 
 test('renders the three charts with text summaries', async ({ page }) => {
   for (const name of FIGURES) {
@@ -15,6 +15,10 @@ test('renders the three charts with text summaries', async ({ page }) => {
   await expect(page.getByRole('figure', { name: 'Equity over time' }).locator('.chart')).toHaveAccessibleName(
     /^Stacked area chart of each person's equity from the start to Year 25, month 12\./,
   );
+});
+
+test('shows paid in versus equity first', async ({ page }) => {
+  await expect(page.locator('figure > figcaption')).toHaveText(FIGURES);
 });
 
 test('each chart has a data table toggle', async ({ page }) => {

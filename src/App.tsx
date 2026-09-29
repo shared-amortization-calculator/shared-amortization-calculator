@@ -64,9 +64,9 @@ export default function App() {
           <h2 id="results-heading">Results</h2>
           <WarrantyNotice />
           <Results result={result} currency={state.currency} />
+          <ContributedVsEquity {...chartProps} />
           <EquityOverTime {...chartProps} />
           <BalanceOverTime {...chartProps} />
-          <ContributedVsEquity {...chartProps} />
         </section>
       </main>
       <Footer />
