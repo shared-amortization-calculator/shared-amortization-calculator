@@ -79,6 +79,51 @@ describe('computeSchedule', () => {
     expect(month12[1]).toBeCloseTo(820, 9);
   });
 
+  describe('with fees added to the loan', () => {
+    // Same hand case plus £120 of fees: £1,320 loan at 0% over 1 year = £110/month.
+    // The fee comes out of the deposit's equity, split like the deposit: A £120, B £60 at month 0.
+    const withFees = (equityMode: EquityMode) => ({ ...handCase(equityMode), feesAddedToLoan: 120 });
+
+    it('starts with total equity of the deposit minus the fees', () => {
+      const opening = computeSchedule(withFees('proportional')).rows[0];
+      expect(opening.closingBalance).toBe(1320);
+      expect(opening.totalEquity).toBe(180);
+      expect(opening.people.map((p) => p.cumulativeContributed)).toEqual([200, 100]);
+    });
+
+    it('depositBaseline mode credits the deposit net of its share of the fees', () => {
+      const month0 = equities(withFees('depositBaseline'), 0);
+      expect(month0[0]).toBeCloseTo(120, 9);
+      expect(month0[1]).toBeCloseTo(60, 9);
+      const month12 = equities(withFees('depositBaseline'), 12);
+      expect(month12[0]).toBeCloseTo(1110, 9);
+      expect(month12[1]).toBeCloseTo(390, 9);
+    });
+
+    it('lockedDeposit mode credits the deposit net of its share of the fees', () => {
+      const month12 = equities(withFees('lockedDeposit'), 12);
+      expect(month12[0]).toBeCloseTo(648, 9);
+      expect(month12[1]).toBeCloseTo(852, 9);
+    });
+
+    it.each(MODES)('%s: equity always sums to total equity', (equityMode) => {
+      for (const row of computeSchedule(withFees(equityMode)).rows) {
+        const total = row.people.reduce((a, p) => a + p.equity, 0);
+        expect(total).toBeCloseTo(row.totalEquity, 9);
+      }
+    });
+
+    it.each(MODES)('%s: starts below zero when fees exceed the deposit', (equityMode) => {
+      const inputs = { ...withFees(equityMode), downPayment: 0 };
+      const opening = computeSchedule(inputs).rows[0];
+      expect(opening.totalEquity).toBe(-120);
+      for (const p of opening.people) {
+        expect(Number.isFinite(p.equity)).toBe(true);
+        expect(p.equity).toBeLessThan(0);
+      }
+    });
+  });
+
   it('proportional counts interest but depositBaseline does not', () => {
     // B paid half the deposit and nothing since; A pays every monthly payment (with interest).
     const people = [

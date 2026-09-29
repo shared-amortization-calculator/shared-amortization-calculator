@@ -27,7 +27,7 @@ export function monthlyPayment(loanAmount: number, annualRatePercent: number, te
 }
 
 export function buildLoanSchedule(inputs: MortgageInputs): LoanSchedule {
-  const loanAmount = inputs.homePrice - inputs.downPayment;
+  const loanAmount = inputs.homePrice - inputs.downPayment + inputs.feesAddedToLoan;
   const payment = monthlyPayment(loanAmount, inputs.annualRatePercent, inputs.termYears);
   const i = inputs.annualRatePercent / 100 / 12;
   const termMonths = inputs.termYears * 12;

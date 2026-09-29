@@ -5,7 +5,7 @@ import type { MortgageInputs, ScheduleResult, ScheduleRow } from './types';
 type LoanFields = Omit<ScheduleRow, 'totalEquity' | 'people'>;
 
 export function computeSchedule(inputs: MortgageInputs): ScheduleResult {
-  const { people, downPayment, homePrice } = inputs;
+  const { people, downPayment, feesAddedToLoan, homePrice } = inputs;
   const strategy = equityStrategies[inputs.equityMode];
   const loan = buildLoanSchedule(inputs);
   const contributed = people.map((p) => downPayment * p.downPaymentShare);
@@ -15,7 +15,7 @@ export function computeSchedule(inputs: MortgageInputs): ScheduleResult {
     const totalEquity = homePrice - fields.closingBalance;
     const equity = strategy({
       people,
-      downPayment,
+      netDeposit: downPayment - feesAddedToLoan,
       totalEquity,
       principalRepaid: loan.loanAmount - fields.closingBalance,
       cumulativeContributed: [...contributed],

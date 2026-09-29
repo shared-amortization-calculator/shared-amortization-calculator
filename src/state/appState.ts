@@ -8,6 +8,7 @@ const PERSON_IDS = ['p1', 'p2', 'p3'];
 export interface AppState {
   homePrice: number;
   downPaymentPercent: number;
+  feesAddedToLoan: number;
   annualRatePercent: number;
   termYears: number;
   people: Person[];
@@ -32,6 +33,7 @@ export function initialState(): AppState {
   return {
     homePrice: 300000,
     downPaymentPercent: 10,
+    feesAddedToLoan: 0,
     annualRatePercent: 4.5,
     termYears: 25,
     people: equalizeShares([createPerson('p1', 'Person 1'), createPerson('p2', 'Person 2')]),
@@ -69,6 +71,7 @@ export function toMortgageInputs(state: AppState): MortgageInputs {
   return {
     homePrice: state.homePrice,
     downPayment: (state.homePrice * state.downPaymentPercent) / 100,
+    feesAddedToLoan: state.feesAddedToLoan,
     annualRatePercent: state.annualRatePercent,
     termYears: state.termYears,
     people: state.people,

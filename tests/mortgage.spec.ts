@@ -27,17 +27,41 @@ test('moving the interest rate slider updates the results', async ({ page }) => 
 });
 
 test('clearing a number field keeps the last valid result', async ({ page }) => {
-  const price = page.getByRole('spinbutton', { name: 'Home price (exact value)', exact: true });
+  const price = page.getByRole('spinbutton', { name: 'Home price', exact: true });
   await price.fill('');
   await expect(page.getByTestId('monthly-payment')).toHaveText('£1,500.75');
   await price.blur();
   await expect(price).toHaveValue('300000');
 });
 
-test('a home price above the slider range is accepted', async ({ page }) => {
-  await page.getByRole('spinbutton', { name: 'Home price (exact value)', exact: true }).fill('3000000');
-  await expect(page.getByRole('slider', { name: 'Home price', exact: true })).toHaveValue('2000000');
+test('home price is a text box without a slider', async ({ page }) => {
+  await expect(page.getByRole('slider', { name: /home price/i })).toHaveCount(0);
+  await page.getByRole('spinbutton', { name: 'Home price', exact: true }).fill('3000000');
   await expect(page.getByTestId('monthly-payment')).toHaveText('£15,007.48');
+});
+
+test('fees added to the loan sit next to the home price', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  const price = await page.getByRole('spinbutton', { name: 'Home price', exact: true }).boundingBox();
+  const fees = await page.getByRole('spinbutton', { name: 'Fees added to loan', exact: true }).boundingBox();
+  expect(fees!.y).toBeCloseTo(price!.y, 0);
+  expect(fees!.x).toBeGreaterThan(price!.x + price!.width);
+});
+
+test('fees added to the loan increase the loan and the payment', async ({ page }) => {
+  const fees = page.getByRole('spinbutton', { name: 'Fees added to loan', exact: true });
+  await expect(fees).toHaveValue('0');
+  await fees.fill('1000');
+  await expect(page.getByText('£30,000 deposit, £271,000 loan')).toBeVisible();
+  await expect(page.getByTestId('monthly-payment')).toHaveText('£1,506.31');
+});
+
+test('negative fees are clamped to zero', async ({ page }) => {
+  const fees = page.getByRole('spinbutton', { name: 'Fees added to loan', exact: true });
+  await fees.fill('-500');
+  await fees.blur();
+  await expect(fees).toHaveValue('0');
+  await expect(page.getByTestId('monthly-payment')).toHaveText('£1,500.75');
 });
 
 test('negative values are clamped to the minimum', async ({ page }) => {

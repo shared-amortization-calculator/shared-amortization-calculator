@@ -1,4 +1,5 @@
-import { useId, useState, type ReactNode } from 'react';
+import { useId, type ReactNode } from 'react';
+import NumberInput, { clampValue } from './NumberInput';
 
 export interface SliderFieldProps {
   label: string;
@@ -14,10 +15,6 @@ export interface SliderFieldProps {
   suffix?: string;
   integer?: boolean;
   hint?: ReactNode;
-}
-
-function display(value: number): string {
-  return String(Math.round(value * 100) / 100);
 }
 
 export default function SliderField({
@@ -39,11 +36,7 @@ export default function SliderField({
   const hintId = `${id}-hint`;
   const prefixId = `${id}-prefix`;
   const suffixId = `${id}-suffix`;
-  const [draft, setDraft] = useState<string | null>(null);
-
-  const clamp = (n: number) => Math.min(max, Math.max(min, integer ? Math.round(n) : n));
-  const numberDescribedBy =
-    [prefix && prefixId, suffix && suffixId, hint && hintId].filter(Boolean).join(' ') || undefined;
+  const clamp = (n: number) => clampValue(n, min, max, integer);
 
   return (
     <div className="slider-field">
@@ -58,32 +51,21 @@ export default function SliderField({
           value={Math.min(Math.max(value, sliderMin), sliderMax)}
           aria-valuetext={valueText(value)}
           aria-describedby={hint ? hintId : undefined}
-          onChange={(e) => {
-            setDraft(null);
-            onChange(clamp(Number(e.target.value)));
-          }}
+          onChange={(e) => onChange(clamp(Number(e.target.value)))}
         />
-        <span className="slider-field__number">
-          {prefix && <span id={prefixId}>{prefix}</span>}
-          <input
-            type="number"
-            inputMode="decimal"
-            step="any"
-            min={min}
-            max={Number.isFinite(max) ? max : undefined}
-            value={draft ?? display(value)}
-            aria-label={`${label} (exact value)`}
-            aria-describedby={numberDescribedBy}
-            onChange={(e) => {
-              const raw = e.target.value;
-              setDraft(raw);
-              const parsed = Number(raw);
-              if (raw.trim() !== '' && Number.isFinite(parsed)) onChange(clamp(parsed));
-            }}
-            onBlur={() => setDraft(null)}
-          />
-          {suffix && <span id={suffixId}>{suffix}</span>}
-        </span>
+        <NumberInput
+          value={value}
+          onChange={onChange}
+          min={min}
+          max={max}
+          integer={integer}
+          prefix={prefix}
+          prefixId={prefixId}
+          suffix={suffix}
+          suffixId={suffixId}
+          ariaLabel={`${label} (exact value)`}
+          describedBy={hint ? hintId : undefined}
+        />
       </div>
       {hint && (
         <p id={hintId} className="slider-field__hint">

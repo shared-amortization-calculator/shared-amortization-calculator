@@ -7,7 +7,7 @@ const input: EquityInput = {
     makePerson({ id: 'a', downPaymentShare: 0.5, ownershipShare: 0.7, principalShare: 0.25 }),
     makePerson({ id: 'b', downPaymentShare: 0.5, ownershipShare: 0.3, principalShare: 0.75 }),
   ],
-  downPayment: 100,
+  netDeposit: 100,
   totalEquity: 400,
   principalRepaid: 300,
   cumulativeContributed: [600, 200],

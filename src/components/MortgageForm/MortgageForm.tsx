@@ -1,3 +1,4 @@
+import NumberField from '../NumberField';
 import SliderField from '../SliderField';
 import { capitalize, currencySymbol, depositTerm, formatCurrency } from '../../format';
 import type { AppState } from '../../state/appState';
@@ -10,22 +11,29 @@ interface MortgageFormProps {
 export default function MortgageForm({ state, onPatch }: MortgageFormProps) {
   const money = (value: number) => formatCurrency(value, state.currency, { whole: true });
   const deposit = (state.homePrice * state.downPaymentPercent) / 100;
+  const loan = state.homePrice - deposit + state.feesAddedToLoan;
   const term = depositTerm(state.currency);
 
   return (
     <section aria-labelledby="mortgage-heading">
       <h2 id="mortgage-heading">Mortgage</h2>
-      <SliderField
-        label="Home price"
-        value={state.homePrice}
-        min={0}
-        sliderMin={50000}
-        sliderMax={2000000}
-        step={5000}
-        prefix={currencySymbol(state.currency)}
-        valueText={money}
-        onChange={(homePrice) => onPatch({ homePrice })}
-      />
+      <div className="field-row">
+        <NumberField
+          label="Home price"
+          value={state.homePrice}
+          min={0}
+          prefix={currencySymbol(state.currency)}
+          onChange={(homePrice) => onPatch({ homePrice })}
+        />
+        <NumberField
+          label="Fees added to loan"
+          value={state.feesAddedToLoan}
+          min={0}
+          prefix={currencySymbol(state.currency)}
+          hint="One-off product fees your lender adds to the loan"
+          onChange={(feesAddedToLoan) => onPatch({ feesAddedToLoan })}
+        />
+      </div>
       <SliderField
         label={capitalize(term)}
         value={state.downPaymentPercent}
@@ -35,7 +43,7 @@ export default function MortgageForm({ state, onPatch }: MortgageFormProps) {
         step={0.5}
         suffix="%"
         valueText={(v) => `${v} percent, ${money((state.homePrice * v) / 100)}`}
-        hint={`${money(deposit)} ${term}, ${money(state.homePrice - deposit)} loan`}
+        hint={`${money(deposit)} ${term}, ${money(loan)} loan`}
         onChange={(downPaymentPercent) => onPatch({ downPaymentPercent })}
       />
       <SliderField

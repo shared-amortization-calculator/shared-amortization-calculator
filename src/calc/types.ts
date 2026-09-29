@@ -16,6 +16,7 @@ export type EquityMode = 'proportional' | 'fixed' | 'depositBaseline' | 'lockedD
 export interface MortgageInputs {
   homePrice: number;
   downPayment: number;
+  feesAddedToLoan: number;
   annualRatePercent: number;
   termYears: number;
   people: Person[];

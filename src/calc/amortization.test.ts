@@ -32,6 +32,13 @@ describe('buildLoanSchedule', () => {
     expect(first.regularPayment).toBeCloseTo(599.550525, 5);
   });
 
+  it('adds fees to the loan amount', () => {
+    const schedule = buildLoanSchedule(makeInputs({ feesAddedToLoan: 1000 }));
+    expect(schedule.loanAmount).toBe(101000);
+    expect(schedule.months[0].openingBalance).toBe(101000);
+    expect(schedule.monthlyPayment).toBeCloseTo(monthlyPayment(101000, 6, 30), 9);
+  });
+
   it('matches textbook total interest', () => {
     const schedule = buildLoanSchedule(makeInputs());
     expect(schedule.months).toHaveLength(360);

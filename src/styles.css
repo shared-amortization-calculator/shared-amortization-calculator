@@ -188,6 +188,12 @@ section {
   max-width: 40vw;
 }
 
+.field-row {
+  display: grid;
+  column-gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+
 .slider-field__hint {
   margin: 0.25rem 0 0;
   color: var(--muted);

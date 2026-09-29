@@ -15,6 +15,7 @@ describe('initialState', () => {
     expect(state).toMatchObject({
       homePrice: 300000,
       downPaymentPercent: 10,
+      feesAddedToLoan: 0,
       annualRatePercent: 4.5,
       termYears: 25,
       equityMode: 'proportional',
@@ -86,5 +87,10 @@ describe('toMortgageInputs', () => {
     expect(inputs.homePrice).toBe(300000);
     expect(inputs.people).toHaveLength(2);
     expect(inputs.equityMode).toBe('proportional');
+  });
+
+  it('passes fees added to the loan through', () => {
+    const inputs = toMortgageInputs({ ...initialState(), feesAddedToLoan: 1500 });
+    expect(inputs.feesAddedToLoan).toBe(1500);
   });
 });

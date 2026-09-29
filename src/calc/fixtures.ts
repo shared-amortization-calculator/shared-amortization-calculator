@@ -18,6 +18,7 @@ export function makeInputs(overrides: Partial<MortgageInputs> = {}): MortgageInp
   return {
     homePrice: 125000,
     downPayment: 25000,
+    feesAddedToLoan: 0,
     annualRatePercent: 6,
     termYears: 30,
     people: [makePerson()],
