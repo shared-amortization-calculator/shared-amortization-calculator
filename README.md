@@ -36,6 +36,7 @@ This app performs all calculations in your browser. No inputs are sent to
 or stored on any server.
 
 **License.**
+Copyright (C) 2026 Oliver Gorwits.
 This software is released under the AGPL 3.0 License.
 See the [LICENSE](LICENSE) file. The license's warranty disclaimer and
 limitation of liability apply in addition to this notice.

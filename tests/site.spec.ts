@@ -24,7 +24,19 @@ test('shows the warranty notice under the Results heading, with no dismiss', asy
   await expect(notice).toContainText('No warranty.');
   await expect(notice).toContainText('provided "AS IS" and "AS AVAILABLE,"');
   await expect(notice.getByRole('button')).toHaveCount(0);
-  await expect(page.getByRole('contentinfo')).toHaveCount(0);
+});
+
+test('the footer shows the copyright and links to the source code', async ({ page }) => {
+  const footer = page.getByRole('contentinfo');
+  await expect(footer).toContainText('Copyright © 2026 Oliver Gorwits');
+  await expect(footer.getByRole('link', { name: 'Source code' })).toHaveAttribute(
+    'href',
+    'https://github.com/shared-amortization-calculator/shared-amortization-calculator',
+  );
+  await expect(footer.getByRole('link', { name: 'AGPL-3.0' })).toHaveAttribute(
+    'href',
+    'https://www.gnu.org/licenses/agpl-3.0.html',
+  );
 });
 
 test('the currency selector changes displayed amounts', async ({ page }) => {
