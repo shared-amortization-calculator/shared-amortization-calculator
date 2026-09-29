@@ -22,3 +22,7 @@ export function setShare(people: Person[], key: ShareKey, index: number, fractio
   const nonLastTotal = updated.reduce((sum, p, k) => (k === last ? sum : sum + p[key]), 0);
   return updated.map((p, k) => (k === last ? { ...p, [key]: Math.max(0, 1 - nonLastTotal) } : p));
 }
+
+export function shareFromAmount(amount: number, total: number): number | null {
+  return total > 0 ? amount / total : null;
+}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { makePerson } from '../calc/fixtures';
-import { equalizeShares, setShare } from './splits';
+import { equalizeShares, setShare, shareFromAmount } from './splits';
 
 function withDownShares(shares: number[]) {
   return shares.map((s, k) => makePerson({ id: `p${k + 1}`, downPaymentShare: s }));
@@ -55,5 +55,20 @@ describe('setShare', () => {
     const people = equalizeShares(withDownShares([0.5, 0.5]));
     const result = setShare(people, 'downPaymentShare', 0, 0.9);
     expect(result.map((p) => p.paymentShare)).toEqual([0.5, 0.5]);
+  });
+});
+
+describe('shareFromAmount', () => {
+  it('turns an amount into a fraction of the total', () => {
+    expect(shareFromAmount(7500, 30000)).toBe(0.25);
+  });
+
+  it('returns null when the total is zero, since no share can be derived', () => {
+    expect(shareFromAmount(100, 0)).toBeNull();
+  });
+
+  it('lets setShare cap an amount larger than what is left', () => {
+    const people = setShare(withDownShares([0.5, 0.5]), 'downPaymentShare', 0, shareFromAmount(45000, 30000)!);
+    expect(downShares(people)).toEqual([1, 0]);
   });
 });

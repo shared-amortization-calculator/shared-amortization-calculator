@@ -35,7 +35,7 @@ export default function App() {
       </header>
       <main id="main" className="page">
         <MortgageForm state={state} onPatch={patch} />
-        <PeopleControls state={state} update={setState} />
+        <PeopleControls state={state} monthlyPayment={result.monthlyPayment} update={setState} />
         <EquityModeSelector state={state} update={setState} />
         <section id="results" tabIndex={-1} aria-labelledby="results-heading">
           <h2 id="results-heading">Results</h2>

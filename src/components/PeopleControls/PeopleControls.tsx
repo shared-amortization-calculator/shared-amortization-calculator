@@ -1,28 +1,30 @@
 import { useEffect, useRef, useState } from 'react';
+import NumberField from '../NumberField';
 import SliderField from '../SliderField';
 import SplitControl from '../SplitControl';
 import type { Person } from '../../calc/types';
-import { capitalize, currencySymbol, depositTerm, formatCurrency, formatMonth } from '../../format';
+import { capitalize, currencySymbol, depositTerm, formatMonth } from '../../format';
 import {
   addPerson,
   displayName,
   MAX_PEOPLE,
   removePerson,
+  toMortgageInputs,
   updatePerson,
   type AppState,
 } from '../../state/appState';
 
 interface PeopleControlsProps {
   state: AppState;
+  monthlyPayment: number;
   update: (fn: (s: AppState) => AppState) => void;
 }
 
-export default function PeopleControls({ state, update }: PeopleControlsProps) {
+export default function PeopleControls({ state, monthlyPayment, update }: PeopleControlsProps) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [focusNameOf, setFocusNameOf] = useState<{ id: string } | null>(null);
   const { people, currency } = state;
   const termMonths = state.termYears * 12;
-  const money = (value: number) => formatCurrency(value, currency, { whole: true });
   const setPeople = (next: Person[]) => update((s) => ({ ...s, people: next }));
 
   useEffect(() => {
@@ -58,14 +60,11 @@ export default function PeopleControls({ state, update }: PeopleControlsProps) {
                   onChange={(e) => update((s) => updatePerson(s, person.id, { name: e.target.value }))}
                 />
               </div>
-              <SliderField
+              <NumberField
                 label="Overpayment per month"
                 value={person.overpaymentMonthly}
                 min={0}
-                sliderMax={2000}
-                step={10}
                 prefix={currencySymbol(currency)}
-                valueText={money}
                 onChange={(v) => update((s) => updatePerson(s, person.id, { overpaymentMonthly: v }))}
               />
               <SliderField
@@ -103,8 +102,8 @@ export default function PeopleControls({ state, update }: PeopleControlsProps) {
           </button>
         </p>
       )}
-      <SplitControl legend={`${capitalize(depositTerm(currency))} split`} people={people} shareKey="downPaymentShare" onChange={setPeople} />
-      <SplitControl legend="Monthly payment split" people={people} shareKey="paymentShare" onChange={setPeople} />
+      <SplitControl legend={`${capitalize(depositTerm(currency))} split`} people={people} shareKey="downPaymentShare" total={toMortgageInputs(state).downPayment} currency={currency} onChange={setPeople} />
+      <SplitControl legend="Monthly payment split" people={people} shareKey="paymentShare" total={monthlyPayment} currency={currency} onChange={setPeople} />
     </section>
   );
 }

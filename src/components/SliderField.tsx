@@ -15,6 +15,7 @@ export interface SliderFieldProps {
   suffix?: string;
   integer?: boolean;
   hint?: ReactNode;
+  after?: ReactNode;
 }
 
 export default function SliderField({
@@ -31,6 +32,7 @@ export default function SliderField({
   suffix,
   integer = false,
   hint,
+  after,
 }: SliderFieldProps) {
   const id = useId();
   const hintId = `${id}-hint`;
@@ -66,6 +68,7 @@ export default function SliderField({
           ariaLabel={`${label} (exact value)`}
           describedBy={hint ? hintId : undefined}
         />
+        {after}
       </div>
       {hint && (
         <p id={hintId} className="slider-field__hint">

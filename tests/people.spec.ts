@@ -28,7 +28,7 @@ test('removing a person moves focus to the People heading', async ({ page }) => 
 test('the last person gets the remainder of a split', async ({ page }) => {
   const split = page.getByRole('group', { name: 'Deposit split' });
   await split.getByRole('spinbutton', { name: 'Person 1 share (exact value)' }).fill('70');
-  await expect(split).toContainText('Person 2 share: 30% (the remainder)');
+  await expect(split).toContainText('Person 2 share: 30% (£9,000.00, the remainder)');
 });
 
 test('a split cannot exceed 100%', async ({ page }) => {
@@ -38,7 +38,7 @@ test('a split cannot exceed 100%', async ({ page }) => {
   await first.fill('80');
   await first.blur();
   await expect(first).toHaveValue('66.67');
-  await expect(split).toContainText('Person 3 share: 0% (the remainder)');
+  await expect(split).toContainText('Person 3 share: 0% (£0.00, the remainder)');
 });
 
 test('adding a person resets splits to equal shares', async ({ page }) => {
@@ -46,7 +46,44 @@ test('adding a person resets splits to equal shares', async ({ page }) => {
   await split.getByRole('spinbutton', { name: 'Person 1 share (exact value)' }).fill('70');
   await page.getByRole('button', { name: 'Add person' }).click();
   await expect(split.getByRole('spinbutton', { name: 'Person 1 share (exact value)' })).toHaveValue('33.33');
-  await expect(split).toContainText('Person 3 share: 33.3% (the remainder)');
+  await expect(split).toContainText('Person 3 share: 33.3% (£10,000.00, the remainder)');
+});
+
+test('typing a deposit amount sets the share', async ({ page }) => {
+  const split = page.getByRole('group', { name: 'Deposit split' });
+  await split.getByRole('spinbutton', { name: 'Person 1 share amount' }).fill('7500');
+  await expect(split.getByRole('spinbutton', { name: 'Person 1 share (exact value)' })).toHaveValue('25');
+  await expect(split).toContainText('Person 2 share: 75% (£22,500.00, the remainder)');
+});
+
+test('typing a share percentage updates its amount', async ({ page }) => {
+  const split = page.getByRole('group', { name: 'Monthly payment split' });
+  await split.getByRole('spinbutton', { name: 'Person 1 share (exact value)' }).fill('25');
+  await expect(split.getByRole('spinbutton', { name: 'Person 1 share amount' })).toHaveValue('375.19');
+  await expect(split).toContainText('Person 2 share: 75% (£1,125.56, the remainder)');
+});
+
+test('a split amount follows its total and keeps the percentage', async ({ page }) => {
+  const split = page.getByRole('group', { name: 'Deposit split' });
+  await split.getByRole('spinbutton', { name: 'Person 1 share amount' }).fill('7500');
+  await page.getByRole('spinbutton', { name: 'Home price', exact: true }).fill('400000');
+  await expect(split.getByRole('spinbutton', { name: 'Person 1 share amount' })).toHaveValue('10000');
+  await expect(split.getByRole('spinbutton', { name: 'Person 1 share (exact value)' })).toHaveValue('25');
+});
+
+test('a split amount cannot exceed the total', async ({ page }) => {
+  const split = page.getByRole('group', { name: 'Deposit split' });
+  const amount = split.getByRole('spinbutton', { name: 'Person 1 share amount' });
+  await amount.fill('45000');
+  await amount.blur();
+  await expect(amount).toHaveValue('30000');
+  await expect(split).toContainText('Person 2 share: 0% (£0.00, the remainder)');
+});
+
+test('overpayment per month is a text box without a slider', async ({ page }) => {
+  const card = personCard(page, 'Person 1');
+  await expect(card.getByRole('spinbutton', { name: 'Overpayment per month', exact: true })).toBeVisible();
+  await expect(card.getByRole('slider', { name: 'Overpayment per month' })).toHaveCount(0);
 });
 
 test('renaming a person updates labels, and a blank name falls back', async ({ page }) => {
@@ -59,7 +96,7 @@ test('renaming a person updates labels, and a blank name falls back', async ({ p
 });
 
 test('an overpayment shortens the mortgage', async ({ page }) => {
-  await personCard(page, 'Person 1').getByRole('spinbutton', { name: 'Overpayment per month (exact value)', exact: true }).fill('200');
+  await personCard(page, 'Person 1').getByRole('spinbutton', { name: 'Overpayment per month', exact: true }).fill('200');
   await expect(page.getByTestId('payoff')).toHaveText('Year 21, month 2');
   await expect(page.getByTestId('total-interest')).toHaveText('£141,068.97');
 });
@@ -95,7 +132,7 @@ test('focus moves to the new name field every time a person is added', async ({ 
 test('person card fields are labelled without repeating the person', async ({ page }) => {
   const card = personCard(page, 'Person 2');
   await expect(card.getByRole('textbox', { name: 'Name', exact: true })).toBeVisible();
-  await expect(card.getByRole('slider', { name: 'Overpayment per month', exact: true })).toBeVisible();
+  await expect(card.getByRole('spinbutton', { name: 'Overpayment per month', exact: true })).toBeVisible();
   await expect(card.getByRole('slider', { name: 'Overpayments start in month', exact: true })).toBeVisible();
   await expect(card.getByText(/Person 2:|\(person 2\)/)).toHaveCount(0);
 });

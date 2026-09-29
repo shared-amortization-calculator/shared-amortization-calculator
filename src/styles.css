@@ -171,10 +171,15 @@ section {
 }
 
 .slider-field__controls {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
   align-items: center;
+}
+
+.slider-field__controls input[type="range"] {
+  flex: 1 1 8rem;
+  min-width: 0;
 }
 
 .slider-field__number {
