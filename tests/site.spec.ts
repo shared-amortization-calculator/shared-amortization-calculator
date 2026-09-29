@@ -18,10 +18,13 @@ test('shows the disclaimer until dismissed, then remembers', async ({ page }) =>
   await expect(page.getByRole('region', { name: 'Disclaimer' })).toHaveCount(0);
 });
 
-test('shows the warranty disclaimer in the footer', async ({ page }) => {
-  const footer = page.getByRole('contentinfo');
-  await expect(footer).toContainText('No warranty.');
-  await expect(footer).toContainText('provided "AS IS" and "AS AVAILABLE,"');
+test('shows the warranty notice under the Results heading, with no dismiss', async ({ page }) => {
+  const notice = page.locator('#results-heading + [role="note"]');
+  await expect(notice).toBeVisible();
+  await expect(notice).toContainText('No warranty.');
+  await expect(notice).toContainText('provided "AS IS" and "AS AVAILABLE,"');
+  await expect(notice.getByRole('button')).toHaveCount(0);
+  await expect(page.getByRole('contentinfo')).toHaveCount(0);
 });
 
 test('the currency selector changes displayed amounts', async ({ page }) => {

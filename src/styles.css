@@ -149,14 +149,22 @@ section {
 }
 
 .banner {
-  margin-top: 1rem;
+  margin: 1rem 0;
+  padding: 1rem;
   background: var(--banner-bg);
   border: 2px solid var(--text);
   border-radius: 4px;
 }
 
-.banner__title {
+.banner > :first-child {
   margin-top: 0;
+}
+
+.banner > :last-child {
+  margin-bottom: 0;
+}
+
+.banner__title {
   font-size: 1.25rem;
   font-weight: 700;
 }
@@ -323,12 +331,6 @@ caption {
 
 caption {
   font-weight: 600;
-}
-
-.site-footer {
-  margin-top: 3rem;
-  border-top: 2px solid var(--border);
-  color: var(--muted);
 }
 
 @media (prefers-reduced-motion: reduce) {

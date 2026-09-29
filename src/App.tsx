@@ -5,10 +5,10 @@ import EquityOverTime from './components/charts/EquityOverTime';
 import CurrencySelector from './components/CurrencySelector';
 import DisclaimerBanner from './components/DisclaimerBanner';
 import EquityModeSelector from './components/EquityModeSelector/EquityModeSelector';
-import Footer from './components/Footer';
 import MortgageForm from './components/MortgageForm/MortgageForm';
 import PeopleControls from './components/PeopleControls/PeopleControls';
 import Results from './components/Results/Results';
+import WarrantyNotice from './components/WarrantyNotice';
 import { useAmortizationSchedule } from './hooks/useAmortizationSchedule';
 import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion';
 import { initialState, type AppState } from './state/appState';
@@ -39,13 +39,13 @@ export default function App() {
         <EquityModeSelector state={state} update={setState} />
         <section id="results" tabIndex={-1} aria-labelledby="results-heading">
           <h2 id="results-heading">Results</h2>
+          <WarrantyNotice />
           <Results result={result} currency={state.currency} />
           <EquityOverTime {...chartProps} />
           <BalanceOverTime {...chartProps} />
           <ContributedVsEquity {...chartProps} />
         </section>
       </main>
-      <Footer />
     </>
   );
 }

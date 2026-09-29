@@ -5,12 +5,12 @@ const WARRANTY_TEXT =
   'become outdated (for example, tax rules and rates change). You are responsible for verifying any result before ' +
   'relying on it.';
 
-export default function Footer() {
+export default function WarrantyNotice() {
   return (
-    <footer className="site-footer page">
+    <div className="banner" role="note">
       <p>
         <strong>No warranty.</strong> {WARRANTY_TEXT}
       </p>
-    </footer>
+    </div>
   );
 }
