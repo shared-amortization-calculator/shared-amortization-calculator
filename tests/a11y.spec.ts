@@ -39,9 +39,9 @@ test('arrow keys change a slider', async ({ page }) => {
 
 test('focused controls show a 3px outline', async ({ page }) => {
   // No pointer interaction has happened, so programmatic focus matches :focus-visible.
-  const dismiss = page.getByRole('button', { name: 'Dismiss' });
-  await dismiss.focus();
-  const outline = await dismiss.evaluate((el) => {
+  const currency = page.getByRole('combobox', { name: 'Currency' });
+  await currency.focus();
+  const outline = await currency.evaluate((el) => {
     const style = getComputedStyle(el);
     return { style: style.outlineStyle, width: style.outlineWidth };
   });

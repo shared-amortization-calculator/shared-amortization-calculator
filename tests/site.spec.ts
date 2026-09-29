@@ -4,18 +4,24 @@ test.beforeEach(async ({ page }) => {
   await page.goto('./');
 });
 
-test('shows the disclaimer until dismissed, then remembers', async ({ page }) => {
+test('always shows the disclaimer, with no dismiss', async ({ page }) => {
   const banner = page.getByRole('region', { name: 'Disclaimer' });
   await expect(banner).toBeVisible();
   await expect(banner).toContainText('For informational and educational purposes only.');
-
-  await banner.getByRole('button', { name: 'Dismiss' }).click();
-  await expect(banner).toHaveCount(0);
-  await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
+  await expect(banner.getByRole('button')).toHaveCount(0);
 
   await page.reload();
-  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-  await expect(page.getByRole('region', { name: 'Disclaimer' })).toHaveCount(0);
+  await expect(page.getByRole('region', { name: 'Disclaimer' })).toBeVisible();
+});
+
+test('the disclaimer lines up with the page column on a wide screen', async ({ page }) => {
+  await page.setViewportSize({ width: 1600, height: 900 });
+  const banner = (await page.getByRole('region', { name: 'Disclaimer' }).boundingBox())!;
+  const heading = (await page.getByRole('heading', { level: 1 }).boundingBox())!;
+  const main = (await page.getByRole('main').boundingBox())!;
+  const gutter = heading.x - main.x;
+  expect(banner.x).toBeCloseTo(heading.x, 0);
+  expect(banner.x + banner.width).toBeCloseTo(main.x + main.width - gutter, 0);
 });
 
 test('shows the warranty notice under the Results heading, with no dismiss', async ({ page }) => {

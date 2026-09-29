@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import BalanceOverTime from './components/charts/BalanceOverTime';
 import ContributedVsEquity from './components/charts/ContributedVsEquity';
 import EquityOverTime from './components/charts/EquityOverTime';
@@ -18,7 +18,6 @@ export default function App() {
   const [state, setState] = useState<AppState>(initialState);
   const result = useAmortizationSchedule(state);
   const animate = !usePrefersReducedMotion();
-  const titleRef = useRef<HTMLHeadingElement>(null);
   const patch = (p: Partial<AppState>) => setState((s) => ({ ...s, ...p }));
   const chartProps = { result, people: state.people, currency: state.currency, animate };
 
@@ -27,11 +26,9 @@ export default function App() {
       <a className="skip-link" href="#results">
         Skip to results
       </a>
-      <DisclaimerBanner onDismiss={() => titleRef.current?.focus()} />
+      <DisclaimerBanner />
       <header className="site-header page">
-        <h1 id="app-title" ref={titleRef} tabIndex={-1}>
-          Shared Amortization Calculator
-        </h1>
+        <h1 id="app-title">Shared Amortization Calculator</h1>
         <CurrencySelector value={state.currency} onChange={(currency) => patch({ currency })} />
       </header>
       <main id="main" className="page">
