@@ -43,3 +43,9 @@ limitation of liability apply in addition to this notice.
 **Changes.**
 These terms may be updated at any time. Continued use of the app constitutes
 acceptance of the current terms.
+
+## Credits
+
+The favicon is the "money with wings" emoji from
+[Noto Emoji](https://github.com/googlefonts/noto-emoji) by Google, used under the
+[Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0).

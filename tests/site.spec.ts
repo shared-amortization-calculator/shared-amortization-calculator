@@ -44,3 +44,12 @@ test('the skip link moves focus to the results', async ({ page }) => {
   await page.keyboard.press('Enter');
   await expect(page.locator('#results')).toBeFocused();
 });
+
+test('serves the money-with-wings favicon', async ({ page, request }) => {
+  const icon = page.locator('link[rel="icon"]');
+  await expect(icon).toHaveAttribute('type', 'image/svg+xml');
+  const href = await icon.evaluate((el: HTMLLinkElement) => el.href);
+  const response = await request.get(href);
+  expect(response.status()).toBe(200);
+  expect(response.headers()['content-type']).toContain('image/svg+xml');
+});
