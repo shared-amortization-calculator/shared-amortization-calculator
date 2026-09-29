@@ -5,6 +5,7 @@ import { displayName } from '../../state/appState';
 import ChartFigure, { type ChartProps } from './ChartFigure';
 import { contributedData, yearlyRows, yearTicks } from './chartData';
 import DataTable from './DataTable';
+import EndStats from './EndStats';
 import { endLabel } from './endLabel';
 import { GRID_COLOR, PAID_IN_DASH, PERSON_COLORS, TEXT_COLOR } from './theme';
 
@@ -75,6 +76,19 @@ export default function ContributedVsEquity({ result, people, currency, animate 
             ])}
           </LineChart>
         </ResponsiveContainer>
+      }
+      stats={
+        <EndStats
+          id="contributed"
+          payoffMonth={result.payoffMonth}
+          stats={names.map((n, k) => ({
+            name: n,
+            values: [
+              { label: 'Paid in', value: money(final.people[k].cumulativeContributed) },
+              { label: 'Equity', value: money(final.people[k].equity) },
+            ],
+          }))}
+        />
       }
       table={
         <DataTable

@@ -307,6 +307,43 @@ figcaption {
   margin-bottom: 0.5rem;
 }
 
+.end-stats {
+  margin-bottom: 1rem;
+}
+
+.end-stats-heading {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+.end-stats dl {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  margin: 0;
+}
+
+.end-stats dl div {
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border-left: 6px solid var(--border);
+  border-radius: 4px;
+}
+
+.end-stats dt {
+  font-weight: 600;
+}
+
+.end-stats dd {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.end-stats-label {
+  font-size: 1rem;
+  color: var(--muted);
+}
+
 .table-wrap {
   overflow-x: auto;
 }

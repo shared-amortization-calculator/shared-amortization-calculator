@@ -14,10 +14,11 @@ interface ChartFigureProps {
   title: string;
   summary: string;
   chart: ReactNode;
+  stats?: ReactNode;
   table: ReactNode;
 }
 
-export default function ChartFigure({ id, title, summary, chart, table }: ChartFigureProps) {
+export default function ChartFigure({ id, title, summary, chart, stats, table }: ChartFigureProps) {
   const [showTable, setShowTable] = useState(false);
   const captionId = `${id}-caption`;
   const tableId = `${id}-table`;
@@ -28,6 +29,7 @@ export default function ChartFigure({ id, title, summary, chart, table }: ChartF
       <div className="chart" role="img" aria-label={summary}>
         {chart}
       </div>
+      {stats}
       <button
         type="button"
         className="secondary"

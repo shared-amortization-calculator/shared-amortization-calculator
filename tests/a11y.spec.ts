@@ -91,3 +91,16 @@ test('reduced motion disables chart animation', async ({ page }) => {
   await page.reload();
   expect(await chartAnimatesAfterLoad(page)).toBe(false);
 });
+
+test('end-of-loan boxes follow an early payoff from overpaying', async ({ page }) => {
+  await page.getByRole('spinbutton', { name: 'Overpayment per month' }).first().fill('500');
+  const payoff = await page.getByTestId('payoff').textContent();
+  expect(payoff).not.toContain('Year 25');
+  for (const id of ['equity', 'contributed']) {
+    await expect(page.getByTestId(`${id}-end-heading`)).toHaveText(`When the loan is repaid (${payoff})`);
+  }
+  await expect(page.getByTestId('equity-end-0')).toContainText('£');
+  await expect(page.getByTestId('contributed-end-0')).toContainText('Paid in £');
+  await expect(page.getByTestId('contributed-end-0')).toContainText('Equity £');
+  await expectNoViolations(page);
+});

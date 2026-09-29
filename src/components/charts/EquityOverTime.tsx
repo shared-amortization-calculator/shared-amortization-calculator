@@ -5,6 +5,7 @@ import { displayName } from '../../state/appState';
 import ChartFigure, { type ChartProps } from './ChartFigure';
 import { equityData, yearlyRows, yearTicks } from './chartData';
 import DataTable from './DataTable';
+import EndStats from './EndStats';
 import { endLabel } from './endLabel';
 import { GRID_COLOR, PERSON_COLORS, PERSON_DASHES, TEXT_COLOR } from './theme';
 
@@ -60,6 +61,13 @@ export default function EquityOverTime({ result, people, currency, animate }: Ch
             ))}
           </AreaChart>
         </ResponsiveContainer>
+      }
+      stats={
+        <EndStats
+          id="equity"
+          payoffMonth={result.payoffMonth}
+          stats={names.map((n, k) => ({ name: n, values: [{ value: money(final.people[k].equity) }] }))}
+        />
       }
       table={
         <DataTable
