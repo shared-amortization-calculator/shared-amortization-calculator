@@ -22,7 +22,7 @@ const modes = (term: string): { mode: EquityMode; label: string; description: st
   },
   {
     mode: 'lockedDeposit',
-    label: `${capitalize(term)} locked in, remaining loan split by fixed shares`,
+    label: `${capitalize(term)} preserved, remaining loan split by fixed shares`,
     description: `Each person owns their ${term}. The loan repaid is split by fixed shares you set.`,
   },
 ];

@@ -112,7 +112,7 @@ test('mode-specific splits appear only for their mode', async ({ page }) => {
   await expect(ownership).toBeVisible();
   await expect(principal).toHaveCount(0);
 
-  await page.getByRole('radio', { name: 'Deposit locked in, remaining loan split by fixed shares' }).check();
+  await page.getByRole('radio', { name: 'Deposit preserved, remaining loan split by fixed shares' }).check();
   await expect(principal).toBeVisible();
   await expect(ownership).toHaveCount(0);
 });

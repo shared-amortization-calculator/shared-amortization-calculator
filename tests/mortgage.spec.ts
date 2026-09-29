@@ -92,7 +92,7 @@ test('uses deposit for pounds and euros and down payment for dollars', async ({ 
     await expect(page.getByText(`${symbol}30,000 ${lower}, ${symbol}270,000 loan`)).toBeVisible();
     await expect(page.getByRole('group', { name: `${label} split` })).toBeVisible();
     await expect(page.getByRole('radio', { name: `${label}, plus principal each person repays` })).toBeVisible();
-    await expect(page.getByRole('radio', { name: `${label} locked in, remaining loan split by fixed shares` })).toBeVisible();
+    await expect(page.getByRole('radio', { name: `${label} preserved, remaining loan split by fixed shares` })).toBeVisible();
     await expect(page.getByText(`Each person owns their ${lower}. The loan repaid`)).toBeVisible();
   };
 
