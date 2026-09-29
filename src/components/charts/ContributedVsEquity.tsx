@@ -5,13 +5,12 @@ import { displayName } from '../../state/appState';
 import ChartFigure, { type ChartProps } from './ChartFigure';
 import { contributedData, yearlyRows, yearTicks } from './chartData';
 import DataTable from './DataTable';
+import EndLabels from './EndLabels';
 import EndStats from './EndStats';
-import { endLabel } from './endLabel';
 import { GRID_COLOR, PAID_IN_DASH, PERSON_COLORS, TEXT_COLOR } from './theme';
 
 export default function ContributedVsEquity({ result, people, currency, animate }: ChartProps) {
   const data = contributedData(result);
-  const lastIndex = data.length - 1;
   const names = people.map(displayName);
   const final = result.rows[result.rows.length - 1];
   const money = (v: number) => formatCurrency(v, currency);
@@ -30,7 +29,7 @@ export default function ContributedVsEquity({ result, people, currency, animate 
       summary={summary}
       chart={
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} accessibilityLayer={false} margin={{ top: 56, right: 16, bottom: 8, left: 16 }}>
+          <LineChart data={data} accessibilityLayer={false} margin={{ top: 24, right: 16, bottom: 8, left: 16 }}>
             <CartesianGrid stroke={GRID_COLOR} strokeDasharray="3 3" />
             <XAxis
               dataKey="month"
@@ -59,7 +58,6 @@ export default function ContributedVsEquity({ result, people, currency, animate 
                 dot={false}
                 legendType="plainline"
                 isAnimationActive={animate}
-                label={endLabel(`${names[k]} paid in`, lastIndex, PERSON_COLORS[k], -8 - 20 * k)}
               />,
               <Line
                 key={`${p.id}_equity`}
@@ -71,9 +69,14 @@ export default function ContributedVsEquity({ result, people, currency, animate 
                 dot={false}
                 legendType="plainline"
                 isAnimationActive={animate}
-                label={endLabel(`${names[k]} equity`, lastIndex, PERSON_COLORS[k], 20 + 20 * k)}
               />,
             ])}
+            <EndLabels
+              labels={people.flatMap((_, k) => [
+                { text: `${names[k]} paid in`, value: final.people[k].cumulativeContributed, color: PERSON_COLORS[k] },
+                { text: `${names[k]} equity`, value: final.people[k].equity, color: PERSON_COLORS[k] },
+              ])}
+            />
           </LineChart>
         </ResponsiveContainer>
       }

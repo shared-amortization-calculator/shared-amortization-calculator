@@ -5,13 +5,12 @@ import { displayName } from '../../state/appState';
 import ChartFigure, { type ChartProps } from './ChartFigure';
 import { equityData, yearlyRows, yearTicks } from './chartData';
 import DataTable from './DataTable';
+import EndLabels from './EndLabels';
 import EndStats from './EndStats';
-import { endLabel } from './endLabel';
 import { GRID_COLOR, PERSON_COLORS, PERSON_DASHES, TEXT_COLOR } from './theme';
 
 export default function EquityOverTime({ result, people, currency, animate }: ChartProps) {
   const data = equityData(result);
-  const lastIndex = data.length - 1;
   const names = people.map(displayName);
   const final = result.rows[result.rows.length - 1];
   const money = (v: number) => formatCurrency(v, currency);
@@ -56,9 +55,16 @@ export default function EquityOverTime({ result, people, currency, animate }: Ch
                 fill={PERSON_COLORS[k]}
                 fillOpacity={0.25}
                 isAnimationActive={animate}
-                label={endLabel(names[k], lastIndex, PERSON_COLORS[k])}
               />
             ))}
+            <EndLabels
+              labels={people.map((_, k) => ({
+                text: names[k],
+                // Areas are stacked, so each person's band ends at the running total.
+                value: final.people.slice(0, k + 1).reduce((sum, p) => sum + p.equity, 0),
+                color: PERSON_COLORS[k],
+              }))}
+            />
           </AreaChart>
         </ResponsiveContainer>
       }

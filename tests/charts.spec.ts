@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('./');
@@ -58,13 +58,14 @@ test('data tables handle people with the same name', async ({ page }) => {
   expect(errors.filter((e) => e.includes('same key'))).toEqual([]);
 });
 
-test('paid-in chart labels do not overlap when people contribute equally', async ({ page }) => {
-  const figure = page.getByRole('figure', { name: 'Paid in versus equity' });
-  await expect(figure.locator('.end-label')).toHaveCount(4);
+async function expectNoLabelOverlap(page: Page, name: string, count: number) {
+  const figure = page.getByRole('figure', { name });
+  await expect(figure.locator('.end-label')).toHaveCount(count);
   const boxes = await figure.locator('.end-label').evaluateAll((els) =>
     els.map((el) => {
-      const r = el.getBoundingClientRect();
-      return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, text: el.textContent };
+      // getBBox measures the glyphs alone; Firefox also counts the halo stroke in getBoundingClientRect.
+      const r = (el as SVGTextElement).getBBox();
+      return { left: r.x, right: r.x + r.width, top: r.y, bottom: r.y + r.height, text: el.textContent };
     }),
   );
   for (let a = 0; a < boxes.length; a++) {
@@ -75,6 +76,17 @@ test('paid-in chart labels do not overlap when people contribute equally', async
       expect(overlap, `${boxes[a].text} overlaps ${boxes[b].text}`).toBe(false);
     }
   }
+}
+
+test('paid-in chart labels do not overlap when people contribute equally', async ({ page }) => {
+  await expectNoLabelOverlap(page, 'Paid in versus equity', 4);
+});
+
+test('chart labels do not overlap for three people when one overpays', async ({ page }) => {
+  await page.getByRole('button', { name: 'Add person' }).click();
+  await page.getByRole('spinbutton', { name: 'Overpayment per month' }).first().fill('500');
+  await expectNoLabelOverlap(page, 'Paid in versus equity', 6);
+  await expectNoLabelOverlap(page, 'Equity over time', 3);
 });
 
 test('paid-in chart legend shows dashed icons for paid in and solid icons for equity', async ({ page }) => {
