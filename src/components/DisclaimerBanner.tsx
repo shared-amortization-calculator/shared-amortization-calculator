@@ -10,6 +10,10 @@ export default function DisclaimerBanner() {
           buy, sell, or hold any financial product or to take any particular course of action. Consult a qualified
           professional before making financial decisions.
         </p>
+        <p>
+          <strong>Privacy.</strong> This app performs all calculations in your browser. No inputs are sent to or
+          stored on any server.
+        </p>
       </div>
     </div>
   );

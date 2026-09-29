@@ -8,6 +8,9 @@ test('always shows the disclaimer, with no dismiss', async ({ page }) => {
   const banner = page.getByRole('region', { name: 'Disclaimer' });
   await expect(banner).toBeVisible();
   await expect(banner).toContainText('For informational and educational purposes only.');
+  await expect(banner.getByRole('paragraph').last()).toHaveText(
+    'Privacy. This app performs all calculations in your browser. No inputs are sent to or stored on any server.',
+  );
   await expect(banner.getByRole('button')).toHaveCount(0);
 
   await page.reload();
