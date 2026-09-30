@@ -7,6 +7,7 @@
   --accent: #0b3d91;
   --accent-contrast: #ffffff;
   --banner-bg: #fff4d6;
+  --intro-bg: #e8f1fb;
   --focus: #0b3d91;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   font-size: 100%;
@@ -180,6 +181,10 @@ section {
 
 .banner > :last-child {
   margin-bottom: 0;
+}
+
+.banner--intro {
+  background: var(--intro-bg);
 }
 
 .banner__title {

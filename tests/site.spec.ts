@@ -27,6 +27,22 @@ test('the disclaimer lines up with the page column on a wide screen', async ({ p
   expect(banner.x + banner.width).toBeCloseTo(main.x + main.width - gutter, 0);
 });
 
+test('introduces the app above the Mortgage section, with a link to Fair Mortgage Split', async ({ page }) => {
+  const intro = page.getByRole('main').locator('> p.banner--intro');
+  await expect(intro).toHaveText(
+    "This free app helps you explore ways to split mortgage payments and ownership (equity) shares between up to " +
+      "three people. If you're more interested in household affordability, including other bills, you might also " +
+      'try Fair Mortgage Split, a separate site not connected with this one.',
+  );
+  const link = intro.getByRole('link', { name: 'Fair Mortgage Split' });
+  await expect(link).toHaveAttribute('href', 'https://www.fairmortgagesplit.co.uk/');
+  await expect(link).toHaveAttribute('rel', 'noreferrer');
+
+  const introBox = (await intro.boundingBox())!;
+  const mortgage = (await page.getByRole('heading', { name: 'Mortgage', exact: true }).boundingBox())!;
+  expect(introBox.y + introBox.height).toBeLessThan(mortgage.y);
+});
+
 test('shows the warranty notice under the Results heading, with no dismiss', async ({ page }) => {
   const notice = page.locator('#results-heading + [role="note"]');
   await expect(notice).toBeVisible();

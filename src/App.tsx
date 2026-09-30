@@ -6,6 +6,7 @@ import CurrencySelector from './components/CurrencySelector';
 import DisclaimerBanner from './components/DisclaimerBanner';
 import EquityModeSelector from './components/EquityModeSelector/EquityModeSelector';
 import Footer from './components/Footer';
+import IntroNotice from './components/IntroNotice';
 import MortgageForm from './components/MortgageForm/MortgageForm';
 import PeopleControls from './components/PeopleControls/PeopleControls';
 import Results from './components/Results/Results';
@@ -57,6 +58,7 @@ export default function App() {
         </div>
       </header>
       <main id="main" className="page">
+        <IntroNotice />
         <MortgageForm state={state} onPatch={patch} />
         <PeopleControls state={state} monthlyPayment={result.monthlyPayment} update={setState} />
         <EquityModeSelector state={state} update={setState} />
