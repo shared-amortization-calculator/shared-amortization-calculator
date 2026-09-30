@@ -6,6 +6,7 @@ describe('formatCurrency', () => {
     expect(formatCurrency(1500.74769, 'GBP')).toBe('£1,500.75');
     expect(formatCurrency(1500.74769, 'USD')).toBe('$1,500.75');
     expect(formatCurrency(1500.74769, 'EUR')).toBe('€1,500.75');
+    expect(formatCurrency(1500.74769, 'AUD')).toBe('$1,500.75');
   });
 
   it('formats whole amounts without pennies', () => {
@@ -26,13 +27,15 @@ describe('currencySymbol', () => {
     expect(currencySymbol('GBP')).toBe('£');
     expect(currencySymbol('USD')).toBe('$');
     expect(currencySymbol('EUR')).toBe('€');
+    expect(currencySymbol('AUD')).toBe('$');
   });
 });
 
 describe('depositTerm', () => {
-  it('says deposit for pounds and euros and down payment for dollars', () => {
+  it('says deposit for pounds, euros and Australian dollars and down payment for US dollars', () => {
     expect(depositTerm('GBP')).toBe('deposit');
     expect(depositTerm('EUR')).toBe('deposit');
+    expect(depositTerm('AUD')).toBe('deposit');
     expect(depositTerm('USD')).toBe('down payment');
   });
 });

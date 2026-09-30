@@ -104,7 +104,7 @@ test('interest rate and term are capped at their slider maximums', async ({ page
   await expect(page.getByTestId('payoff')).toHaveText('Year 40, month 12');
 });
 
-test('uses deposit for pounds and euros and down payment for dollars', async ({ page }) => {
+test('uses deposit for pounds, euros and Australian dollars and down payment for US dollars', async ({ page }) => {
   const currency = page.getByRole('combobox', { name: 'Currency' });
   const expectTerm = async (label: string, lower: string, symbol: string) => {
     await expect(page.getByRole('slider', { name: label, exact: true })).toBeVisible();
@@ -121,5 +121,8 @@ test('uses deposit for pounds and euros and down payment for dollars', async ({ 
   await expect(page.getByText(/deposit/i)).toHaveCount(0);
   await currency.selectOption('EUR');
   await expectTerm('Deposit', 'deposit', '€');
+  await expect(page.getByText(/down payment/i)).toHaveCount(0);
+  await currency.selectOption('AUD');
+  await expectTerm('Deposit', 'deposit', '$');
   await expect(page.getByText(/down payment/i)).toHaveCount(0);
 });

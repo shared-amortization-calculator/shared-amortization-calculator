@@ -1,9 +1,10 @@
-export type CurrencyCode = 'GBP' | 'USD' | 'EUR';
+export type CurrencyCode = 'GBP' | 'USD' | 'EUR' | 'AUD';
 
 export const CURRENCIES: { code: CurrencyCode; label: string; locale: string }[] = [
   { code: 'GBP', label: '£ GBP', locale: 'en-GB' },
   { code: 'USD', label: '$ USD', locale: 'en-US' },
   { code: 'EUR', label: '€ EUR', locale: 'en-IE' },
+  { code: 'AUD', label: '$ AUD', locale: 'en-AU' },
 ];
 
 function localeFor(currency: CurrencyCode): string {

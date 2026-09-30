@@ -26,7 +26,7 @@ export default function ShareControls({ shareUrl, onReset }: ShareControlsProps)
     <div className="share-controls">
       {canCopy && (
         <button type="button" className="secondary" onClick={copy}>
-          Copy link
+          Copy Scenario
         </button>
       )}
       <button type="button" className="secondary" onClick={onReset}>
