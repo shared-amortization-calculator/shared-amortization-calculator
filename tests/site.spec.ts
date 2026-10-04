@@ -65,14 +65,13 @@ test('the footer shows the copyright and links to the source code', async ({ pag
   );
 });
 
-test('external links open in a new tab, but the skip link stays in the page', async ({ page }) => {
+test('external links open in a new tab', async ({ page }) => {
   const external = page.locator('a[href^="http"]');
   expect(await external.count()).toBeGreaterThanOrEqual(3);
   for (const link of await external.all()) {
     await expect(link).toHaveAttribute('target', '_blank');
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   }
-  await expect(page.locator('a.skip-link')).not.toHaveAttribute('target', /.*/);
 });
 
 test('the currency selector changes displayed amounts', async ({ page }) => {
@@ -97,14 +96,6 @@ test('the currency selector draws its own arrow with room beside the border', as
   expect(style.appearance).toBe('none');
   expect(style.image).toContain('svg');
   expect(style.paddingRight).toBeGreaterThanOrEqual(32);
-});
-
-test('the skip link moves focus to the results', async ({ page }) => {
-  const skip = page.getByRole('link', { name: 'Skip to results' });
-  await skip.focus();
-  await expect(skip).toBeInViewport();
-  await page.keyboard.press('Enter');
-  await expect(page.locator('#results')).toBeFocused();
 });
 
 test('serves the money-with-wings favicon', async ({ page, request }) => {

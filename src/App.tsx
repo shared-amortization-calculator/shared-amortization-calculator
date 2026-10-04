@@ -46,9 +46,6 @@ export default function App() {
 
   return (
     <>
-      <a className="skip-link" href="#results">
-        Skip to results
-      </a>
       <DisclaimerBanner />
       <header className="site-header page">
         <h1 id="app-title">Mortgage Split</h1>
