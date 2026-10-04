@@ -7,6 +7,7 @@ import DisclaimerBanner from './components/DisclaimerBanner';
 import EquityModeSelector from './components/EquityModeSelector/EquityModeSelector';
 import Footer from './components/Footer';
 import IntroNotice from './components/IntroNotice';
+import JumpToResults from './components/JumpToResults';
 import MortgageForm from './components/MortgageForm/MortgageForm';
 import PeopleControls from './components/PeopleControls/PeopleControls';
 import Results from './components/Results/Results';
@@ -14,6 +15,7 @@ import ShareControls from './components/ShareControls';
 import WarrantyNotice from './components/WarrantyNotice';
 import { useAmortizationSchedule } from './hooks/useAmortizationSchedule';
 import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion';
+import { useStoredFlag } from './hooks/useStoredFlag';
 import { initialState, type AppState } from './state/appState';
 import { stateFromQuery, stateToQuery } from './state/urlState';
 
@@ -30,6 +32,7 @@ export default function App() {
   const [state, setState] = useState<AppState>(() => stateFromQuery(window.location.search) ?? initialState());
   const result = useAmortizationSchedule(state);
   const animate = !usePrefersReducedMotion();
+  const [pinResults, setPinResults] = useStoredFlag('keepResultsInView');
   const patch = (p: Partial<AppState>) => setState((s) => ({ ...s, ...p }));
   const chartProps = { result, people: state.people, currency: state.currency, animate };
   const shareUrl = `${window.location.origin}${window.location.pathname}?${stateToQuery(state)}`;
@@ -59,15 +62,29 @@ export default function App() {
         <MortgageForm state={state} onPatch={patch} />
         <PeopleControls state={state} monthlyPayment={result.monthlyPayment} update={setState} />
         <EquityModeSelector state={state} update={setState} />
-        <section id="results" tabIndex={-1} aria-labelledby="results-heading">
-          <h2 id="results-heading">Results</h2>
-          <WarrantyNotice />
-          <Results result={result} currency={state.currency} />
-          <ContributedVsEquity {...chartProps} />
-          <EquityOverTime {...chartProps} />
-          <BalanceOverTime {...chartProps} />
+        {/* The summary is its own section, a direct child of main, so when pinned it can stick
+            to the bottom of the viewport all the way up the form. The charts follow it. */}
+        <section
+          id="results"
+          className={pinResults ? 'results results--pinned' : 'results'}
+          tabIndex={-1}
+          aria-labelledby="results-heading"
+        >
+          <div className="results-heading-row">
+            <h2 id="results-heading">Results</h2>
+            <label className="pin-results">
+              <input type="checkbox" checked={pinResults} onChange={(e) => setPinResults(e.target.checked)} />
+              Keep results in view
+            </label>
+          </div>
+          <Results result={result} people={state.people} currency={state.currency} />
         </section>
+        <WarrantyNotice />
+        <ContributedVsEquity {...chartProps} />
+        <EquityOverTime {...chartProps} />
+        <BalanceOverTime {...chartProps} />
       </main>
+      <JumpToResults targetId="results" />
       <Footer />
     </>
   );

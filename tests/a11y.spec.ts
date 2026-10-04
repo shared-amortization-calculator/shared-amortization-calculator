@@ -51,7 +51,7 @@ test('focused controls show a 3px outline', async ({ page }) => {
 test('interactive targets are at least 44px tall', async ({ page }) => {
   await page.getByRole('button', { name: 'Show data table for Equity over time' }).click();
   const heights = await page
-    .locator('button, select, input:not([type="radio"]), .radio-option label')
+    .locator('button, select, input:not([type="radio"], [type="checkbox"]), .radio-option label, .pin-results')
     .evaluateAll((els) =>
       els
         .filter((el) => (el as HTMLElement).offsetParent !== null)
@@ -96,11 +96,11 @@ test('end-of-loan boxes follow an early payoff from overpaying', async ({ page }
   await page.getByRole('spinbutton', { name: 'Overpayment per month' }).first().fill('500');
   const payoff = await page.getByTestId('payoff').textContent();
   expect(payoff).not.toContain('Year 25');
-  for (const id of ['equity', 'contributed']) {
+  for (const id of ['equity', 'repaid']) {
     await expect(page.getByTestId(`${id}-end-heading`)).toHaveText(`When the loan is repaid (${payoff})`);
   }
   await expect(page.getByTestId('equity-end-0')).toContainText('£');
-  await expect(page.getByTestId('contributed-end-0')).toContainText('Paid in £');
-  await expect(page.getByTestId('contributed-end-0')).toContainText('Equity £');
+  await expect(page.getByTestId('repaid-end-0')).toContainText('Paid in £');
+  await expect(page.getByTestId('repaid-end-0')).toContainText('Equity £');
   await expectNoViolations(page);
 });
