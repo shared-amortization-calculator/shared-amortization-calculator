@@ -7,7 +7,7 @@ const WARRANTY_TEXT =
 
 export default function WarrantyNotice() {
   return (
-    <div className="banner" role="note">
+    <div id="warranty" className="banner" role="note" tabIndex={-1}>
       <p>
         <strong>No warranty.</strong> {WARRANTY_TEXT}
       </p>

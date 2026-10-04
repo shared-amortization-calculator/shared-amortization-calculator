@@ -72,8 +72,10 @@ test('phones get a jump-to-results link instead of the checkbox', async ({ page 
   const jump = page.getByRole('link', { name: 'Jump to results' });
   await expect(jump).toBeInViewport();
   await jump.click();
-  await expect(page.locator('#results')).toBeInViewport();
-  await expect(page.locator('#results')).toBeFocused();
+  const warranty = page.getByRole('note').filter({ hasText: 'No warranty.' });
+  await expect(warranty).toBeInViewport();
+  await expect(warranty).toBeFocused();
+  expect((await warranty.boundingBox())!.y).toBeLessThan(20);
   await expect(jump).toBeHidden();
 
   await scrollToTop(page);

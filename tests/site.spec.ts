@@ -44,8 +44,8 @@ test('introduces the app above the Mortgage section, with a link to Fair Mortgag
   expect(introBox.y + introBox.height).toBeLessThan(mortgage.y);
 });
 
-test('shows the warranty notice under the results summary, with no dismiss', async ({ page }) => {
-  const notice = page.locator('#results + [role="note"]');
+test('shows the warranty notice just above the Results heading, with no dismiss', async ({ page }) => {
+  const notice = page.locator('[role="note"]:has(+ #results)');
   await expect(notice).toBeVisible();
   await expect(notice).toContainText('No warranty.');
   await expect(notice).toContainText('provided "AS IS" and "AS AVAILABLE,"');

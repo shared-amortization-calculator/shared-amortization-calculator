@@ -62,12 +62,12 @@ export default function App() {
         <MortgageForm state={state} onPatch={patch} />
         <PeopleControls state={state} monthlyPayment={result.monthlyPayment} update={setState} />
         <EquityModeSelector state={state} update={setState} />
+        <WarrantyNotice />
         {/* The summary is its own section, a direct child of main, so when pinned it can stick
             to the bottom of the viewport all the way up the form. The charts follow it. */}
         <section
           id="results"
           className={pinResults ? 'results results--pinned' : 'results'}
-          tabIndex={-1}
           aria-labelledby="results-heading"
         >
           <div className="results-heading-row">
@@ -79,12 +79,11 @@ export default function App() {
           </div>
           <Results result={result} people={state.people} currency={state.currency} />
         </section>
-        <WarrantyNotice />
         <ContributedVsEquity {...chartProps} />
         <EquityOverTime {...chartProps} />
         <BalanceOverTime {...chartProps} />
       </main>
-      <JumpToResults targetId="results" />
+      <JumpToResults targetId="warranty" />
       <Footer />
     </>
   );
