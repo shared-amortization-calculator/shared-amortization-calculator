@@ -5,8 +5,8 @@ export default function Footer() {
   return (
     <footer className="site-footer page">
       <p>
-        Copyright © 2026 Oliver Gorwits. Free software under the <a href={LICENSE_URL}>AGPL-3.0</a>.{' '}
-        <a href={SOURCE_URL}>Source code</a>
+        Copyright © 2026 Oliver Gorwits. Free software under the <a href={LICENSE_URL} target="_blank" rel="noopener noreferrer">AGPL-3.0</a>.{' '}
+        <a href={SOURCE_URL} target="_blank" rel="noopener noreferrer">Source code</a>
       </p>
     </footer>
   );

@@ -36,7 +36,8 @@ test('introduces the app above the Mortgage section, with a link to Fair Mortgag
   );
   const link = intro.getByRole('link', { name: 'Fair Mortgage Split' });
   await expect(link).toHaveAttribute('href', 'https://www.fairmortgagesplit.co.uk/');
-  await expect(link).toHaveAttribute('rel', 'noreferrer');
+  await expect(link).toHaveAttribute('target', '_blank');
+  await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
 
   const introBox = (await intro.boundingBox())!;
   const mortgage = (await page.getByRole('heading', { name: 'Mortgage', exact: true }).boundingBox())!;
@@ -62,6 +63,16 @@ test('the footer shows the copyright and links to the source code', async ({ pag
     'href',
     'https://www.gnu.org/licenses/agpl-3.0.html',
   );
+});
+
+test('external links open in a new tab, but the skip link stays in the page', async ({ page }) => {
+  const external = page.locator('a[href^="http"]');
+  expect(await external.count()).toBeGreaterThanOrEqual(3);
+  for (const link of await external.all()) {
+    await expect(link).toHaveAttribute('target', '_blank');
+    await expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  }
+  await expect(page.locator('a.skip-link')).not.toHaveAttribute('target', /.*/);
 });
 
 test('the currency selector changes displayed amounts', async ({ page }) => {
