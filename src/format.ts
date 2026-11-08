@@ -37,6 +37,20 @@ export function depositTerm(currency: CurrencyCode): string {
   return currency === 'USD' ? 'down payment' : 'deposit';
 }
 
+export function lodgerTerm(currency: CurrencyCode): string {
+  return currency === 'USD' ? 'roommate' : 'lodger';
+}
+
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
+
+export function formatMonthCount(months: number): string {
+  const count = plural(months, 'month');
+  if (months < 12) return count;
+  const years = Math.floor(months / 12);
+  const rest = months % 12;
+  return `${count} (${plural(years, 'year')}${rest ? `, ${plural(rest, 'month')}` : ''})`;
+}
+
 export function capitalize(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }
