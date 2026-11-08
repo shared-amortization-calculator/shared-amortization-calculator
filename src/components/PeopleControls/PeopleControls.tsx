@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import NumberField from '../NumberField';
 import SliderField from '../SliderField';
+import LodgerControls from '../LodgerControls';
 import SplitControl from '../SplitControl';
-import type { Person } from '../../calc/types';
-import { capitalize, currencySymbol, depositTerm, formatMonth } from '../../format';
+import type { Person, ScheduleResult } from '../../calc/types';
+import { capitalize, currencySymbol, depositTerm, formatMonth, lodgerTerm } from '../../format';
+import { lodgerActive, lodgerCoversLoan, lodgerPeriod, paymentAfterLodger } from '../../state/lodger';
 import {
   addPerson,
   displayName,
@@ -16,16 +18,23 @@ import {
 
 interface PeopleControlsProps {
   state: AppState;
-  monthlyPayment: number;
+  result: ScheduleResult;
   update: (fn: (s: AppState) => AppState) => void;
 }
 
-export default function PeopleControls({ state, monthlyPayment, update }: PeopleControlsProps) {
+export default function PeopleControls({ state, result, update }: PeopleControlsProps) {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const [focusNameOf, setFocusNameOf] = useState<{ id: string } | null>(null);
   const { people, currency } = state;
   const termMonths = state.termYears * 12;
   const setPeople = (next: Person[]) => update((s) => ({ ...s, people: next }));
+  const coversLoan = lodgerCoversLoan(result);
+  const paymentPeriods = lodgerActive(state)
+    ? {
+        during: coversLoan ? `while the ${lodgerTerm(currency)} pays` : lodgerPeriod(result),
+        afterTotal: coversLoan ? null : result.monthlyPayment,
+      }
+    : undefined;
 
   useEffect(() => {
     if (focusNameOf) document.getElementById(`${focusNameOf.id}-name`)?.focus();
@@ -103,7 +112,16 @@ export default function PeopleControls({ state, monthlyPayment, update }: People
         </p>
       )}
       <SplitControl legend={`${capitalize(depositTerm(currency))} split`} people={people} shareKey="downPaymentShare" total={toMortgageInputs(state).downPayment} currency={currency} onChange={setPeople} />
-      <SplitControl legend="Monthly payment split" people={people} shareKey="paymentShare" total={monthlyPayment} currency={currency} onChange={setPeople} />
+      <LodgerControls state={state} update={update} />
+      <SplitControl
+        legend="Monthly payment split"
+        people={people}
+        shareKey="paymentShare"
+        total={paymentAfterLodger(result.monthlyPayment, state)}
+        currency={currency}
+        periods={paymentPeriods}
+        onChange={setPeople}
+      />
     </section>
   );
 }

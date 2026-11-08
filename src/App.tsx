@@ -60,7 +60,7 @@ export default function App() {
       <main id="main" className="page">
         <IntroNotice />
         <MortgageForm state={state} onPatch={patch} />
-        <PeopleControls state={state} monthlyPayment={result.monthlyPayment} update={setState} />
+        <PeopleControls state={state} result={result} update={setState} />
         <EquityModeSelector state={state} update={setState} />
         <WarrantyNotice />
         {/* The summary is its own section, a direct child of main, so when pinned it can stick

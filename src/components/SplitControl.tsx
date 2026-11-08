@@ -12,11 +12,16 @@ interface SplitControlProps {
   onChange: (people: Person[]) => void;
   total?: number;
   currency?: CurrencyCode;
+  // When the amounts change partway through: `during` names the first period, and
+  // `afterTotal` is the total split afterwards (null when there is no afterwards).
+  periods?: { during: string; afterTotal: number | null };
 }
 
-export default function SplitControl({ legend, people, shareKey, onChange, total, currency }: SplitControlProps) {
+export default function SplitControl({ legend, people, shareKey, onChange, total, currency, periods }: SplitControlProps) {
   const lastIndex = people.length - 1;
   const hasAmount = total !== undefined && currency !== undefined;
+  const thenAmount = (share: number) =>
+    periods && periods.afterTotal !== null && currency ? formatCurrency(share * periods.afterTotal, currency) : null;
 
   return (
     <fieldset>
@@ -27,7 +32,9 @@ export default function SplitControl({ legend, people, shareKey, onChange, total
         people.map((person, index) => {
           const name = displayName(person, index);
           if (index === lastIndex) {
-            const amount = hasAmount ? `${formatCurrency(person[shareKey] * total, currency)}, ` : '';
+            const then = thenAmount(person[shareKey]);
+            const period = periods ? ` ${periods.during}${then ? `, then ${then}` : ''}` : '';
+            const amount = hasAmount ? `${formatCurrency(person[shareKey] * total, currency)}${period}, ` : '';
             return (
               <p key={person.id}>
                 {name} share: {formatPercent(person[shareKey])} ({amount}the remainder)
@@ -35,6 +42,7 @@ export default function SplitControl({ legend, people, shareKey, onChange, total
             );
           }
           const setFraction = (fraction: number) => onChange(setShare(people, shareKey, index, fraction));
+          const then = thenAmount(person[shareKey]);
           return (
             <SliderField
               key={person.id}
@@ -49,17 +57,25 @@ export default function SplitControl({ legend, people, shareKey, onChange, total
               onChange={(percent) => setFraction(percent / 100)}
               after={
                 hasAmount && (
-                  <NumberInput
-                    value={person[shareKey] * total}
-                    min={0}
-                    prefix={currencySymbol(currency)}
-                    prefixId={`${person.id}-${shareKey}-amount-prefix`}
-                    ariaLabel={`${name} share amount`}
-                    onChange={(amount) => {
-                      const fraction = shareFromAmount(amount, total);
-                      if (fraction !== null) setFraction(fraction);
-                    }}
-                  />
+                  <>
+                    <NumberInput
+                      value={person[shareKey] * total}
+                      min={0}
+                      prefix={currencySymbol(currency)}
+                      prefixId={`${person.id}-${shareKey}-amount-prefix`}
+                      ariaLabel={`${name} share amount`}
+                      onChange={(amount) => {
+                        const fraction = shareFromAmount(amount, total);
+                        if (fraction !== null) setFraction(fraction);
+                      }}
+                    />
+                    {periods && (
+                      <span className="split-period">
+                        {periods.during}
+                        {then && ` · then ${then}`}
+                      </span>
+                    )}
+                  </>
                 )
               }
             />
