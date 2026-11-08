@@ -9,7 +9,12 @@ import { TEXT_COLOR } from './theme';
 const LODGER_FILL = '#e3e3e0';
 
 // Plain functions rather than components, so Recharts sees the ReferenceArea as a direct child.
-export function lodgerArea(result: ScheduleResult, term: string): ReactElement | null {
+// The label goes where the chart is empty: top left over rising equity, bottom left under a falling balance.
+export function lodgerArea(
+  result: ScheduleResult,
+  term: string,
+  labelPosition: 'insideTopLeft' | 'insideBottomLeft',
+): ReactElement | null {
   if (result.lodgerEndMonth === 0) return null;
   return (
     <ReferenceArea
@@ -20,7 +25,7 @@ export function lodgerArea(result: ScheduleResult, term: string): ReactElement |
       zIndex={-50}
       label={{
         value: `${capitalize(term)}, ${lodgerPeriod(result)}`,
-        position: 'insideTopLeft',
+        position: labelPosition,
         fill: TEXT_COLOR,
       }}
     />

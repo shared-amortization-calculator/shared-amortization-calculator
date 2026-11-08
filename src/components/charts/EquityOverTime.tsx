@@ -29,7 +29,7 @@ export default function EquityOverTime({ result, people, currency, animate, lodg
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} accessibilityLayer={false} margin={{ top: 24, right: 16, bottom: 8, left: 16 }}>
             <CartesianGrid stroke={GRID_COLOR} strokeDasharray="3 3" />
-            {lodgerArea(result, lodgerTerm)}
+            {lodgerArea(result, lodgerTerm, 'insideTopLeft')}
             <XAxis
               dataKey="month"
               type="number"

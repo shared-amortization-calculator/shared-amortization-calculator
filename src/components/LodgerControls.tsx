@@ -21,7 +21,14 @@ export default function LodgerControls({ state, update }: LodgerControlsProps) {
           type="checkbox"
           checked={state.lodgerEnabled}
           // Unticking only hides the fields; the rent and months are kept.
-          onChange={(e) => patch({ lodgerEnabled: e.target.checked })}
+          // Ticking limits the months to the term, so a short loan never shows more months than it has.
+          onChange={(e) =>
+            patch(
+              e.target.checked
+                ? { lodgerEnabled: true, lodgerMonths: Math.min(state.lodgerMonths, termMonths) }
+                : { lodgerEnabled: false },
+            )
+          }
         />
         We have a {term}
       </label>

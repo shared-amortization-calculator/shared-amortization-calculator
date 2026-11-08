@@ -119,6 +119,28 @@ test('no lodger means no shading or column', async ({ page }) => {
   await expect(table.getByRole('columnheader', { name: 'Lodger paid in' })).toHaveCount(0);
 });
 
+test('the balance chart puts the lodger label low in the band, clear of the line', async ({ page }) => {
+  await tickLodger(page);
+  const figure = page.getByRole('figure', { name: 'Loan balance over time' });
+  const band = (await figure.locator('.recharts-reference-area-rect').boundingBox())!;
+  const label = (await figure.getByText('Lodger, months 1–60').boundingBox())!;
+  expect(label.y).toBeGreaterThan(band.y + band.height / 2);
+});
+
+test('the amount box says which months it covers', async ({ page }) => {
+  await tickLodger(page);
+  await expect(paymentSplit(page).getByRole('spinbutton', { name: 'Person 1 share amount' })).toHaveAccessibleDescription(
+    /months 1–60 · then £750\.37/,
+  );
+});
+
+test('ticking the box on a short loan limits the months to the term', async ({ page }) => {
+  await page.getByRole('spinbutton', { name: 'Term (exact value)', exact: true }).fill('3');
+  await tickLodger(page);
+  await expect(months(page)).toHaveValue('36');
+  await expect(page.getByRole('group', { name: 'Lodger', exact: true })).toContainText('36 months (3 years)');
+});
+
 test('US dollars label the charts roommate', async ({ page }) => {
   await page.getByLabel('Currency').selectOption('USD');
   await tickLodger(page, 'roommate');

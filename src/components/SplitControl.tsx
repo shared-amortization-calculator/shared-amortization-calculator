@@ -43,6 +43,7 @@ export default function SplitControl({ legend, people, shareKey, onChange, total
           }
           const setFraction = (fraction: number) => onChange(setShare(people, shareKey, index, fraction));
           const then = thenAmount(person[shareKey]);
+          const periodId = `${person.id}-${shareKey}-period`;
           return (
             <SliderField
               key={person.id}
@@ -64,13 +65,14 @@ export default function SplitControl({ legend, people, shareKey, onChange, total
                       prefix={currencySymbol(currency)}
                       prefixId={`${person.id}-${shareKey}-amount-prefix`}
                       ariaLabel={`${name} share amount`}
+                      describedBy={periods ? periodId : undefined}
                       onChange={(amount) => {
                         const fraction = shareFromAmount(amount, total);
                         if (fraction !== null) setFraction(fraction);
                       }}
                     />
                     {periods && (
-                      <span className="split-period">
+                      <span id={periodId} className="split-period">
                         {periods.during}
                         {then && ` · then ${then}`}
                       </span>
