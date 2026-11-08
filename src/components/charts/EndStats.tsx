@@ -4,6 +4,7 @@ import { PERSON_COLORS } from './theme';
 export interface EndStat {
   name: string;
   values: { label?: string; value: string }[];
+  color?: string;
 }
 
 interface EndStatsProps {
@@ -20,7 +21,7 @@ export default function EndStats({ id, payoffMonth, stats }: EndStatsProps) {
       </p>
       <dl>
         {stats.map((s, k) => (
-          <div key={k} style={{ borderLeftColor: PERSON_COLORS[k] }} data-testid={`${id}-end-${k}`}>
+          <div key={k} style={{ borderLeftColor: s.color ?? PERSON_COLORS[k] }} data-testid={`${id}-end-${k}`}>
             <dt>{s.name}</dt>
             {s.values.map((v, i) => (
               <dd key={i}>

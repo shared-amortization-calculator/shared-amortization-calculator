@@ -68,6 +68,35 @@ test('the lodger is kept in the link and cleared by Reset', async ({ page }) => 
   expect(new URL(page.url()).search).toBe('');
 });
 
+test('the headline shows what the people pay after the rent', async ({ page }) => {
+  await expect(page.getByTestId('after-lodger-payment')).toHaveCount(0);
+  await tickLodger(page);
+  const after = page.getByTestId('after-lodger-payment');
+  await expect(after).toContainText('£1,000.75');
+  await expect(after).toContainText('months 1–60');
+});
+
+test('the repaid summary includes what the lodger paid in', async ({ page }) => {
+  await tickLodger(page);
+  const entry = page.getByTestId('repaid-end-2');
+  await expect(entry).toContainText('Lodger');
+  await expect(entry).toContainText('Paid in £30,000.00');
+  await expect(entry).toContainText('Equity none');
+});
+
+test('a lodger with three people gets its own colour', async ({ page }) => {
+  await page.getByRole('button', { name: 'Add person' }).click();
+  await tickLodger(page);
+  await expect(page.getByTestId('repaid-end-3')).toHaveCSS('border-left-color', 'rgb(89, 89, 89)');
+});
+
+test('rent of zero shows no lodger results', async ({ page }) => {
+  await tickLodger(page);
+  await rent(page).fill('0');
+  await expect(page.getByTestId('after-lodger-payment')).toHaveCount(0);
+  await expect(page.getByTestId('repaid-end-2')).toHaveCount(0);
+});
+
 test('US dollars say roommate', async ({ page }) => {
   await page.getByLabel('Currency').selectOption('USD');
   await tickLodger(page, 'roommate');

@@ -16,7 +16,9 @@ import WarrantyNotice from './components/WarrantyNotice';
 import { useAmortizationSchedule } from './hooks/useAmortizationSchedule';
 import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion';
 import { useStoredFlag } from './hooks/useStoredFlag';
+import { lodgerTerm } from './format';
 import { initialState, type AppState } from './state/appState';
+import { lodgerActive, paymentAfterLodger } from './state/lodger';
 import { stateFromQuery, stateToQuery } from './state/urlState';
 
 const URL_UPDATE_DELAY_MS = 300;
@@ -35,6 +37,9 @@ export default function App() {
   const [pinResults, setPinResults] = useStoredFlag('keepResultsInView');
   const patch = (p: Partial<AppState>) => setState((s) => ({ ...s, ...p }));
   const chartProps = { result, people: state.people, currency: state.currency, animate };
+  const lodger = lodgerActive(state)
+    ? { term: lodgerTerm(state.currency), afterRent: paymentAfterLodger(result.monthlyPayment, state) }
+    : null;
   const shareUrl = `${window.location.origin}${window.location.pathname}?${stateToQuery(state)}`;
 
   useEffect(() => {
@@ -77,7 +82,7 @@ export default function App() {
               Keep results in view
             </label>
           </div>
-          <Results result={result} people={state.people} currency={state.currency} />
+          <Results result={result} people={state.people} currency={state.currency} lodger={lodger} />
         </section>
         <ContributedVsEquity {...chartProps} />
         <EquityOverTime {...chartProps} />
