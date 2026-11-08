@@ -14,6 +14,9 @@ function customState(): AppState {
     termYears: 30,
     equityMode: 'lockedDeposit',
     currency: 'EUR',
+    lodgerEnabled: true,
+    lodgerRentMonthly: 650.5,
+    lodgerMonths: 18,
   };
   state = { ...state, people: setShare(state.people, 'downPaymentShare', 0, 0.6) };
   state = updatePerson(state, 'p1', { name: 'Ana & Bo', overpaymentMonthly: 150, overpaymentStartMonth: 13 });
@@ -42,6 +45,9 @@ describe('stateToQuery / stateFromQuery', () => {
     expect(params.get('price')).toBe('425000');
     expect(params.get('rate')).toBe('5.25');
     expect(params.get('cur')).toBe('EUR');
+    expect(params.get('lodger')).toBe('1');
+    expect(params.get('lrent')).toBe('650.5');
+    expect(params.get('lmonths')).toBe('18');
     expect(params.get('mode')).toBe('lockedDeposit');
     expect(params.get('p1')).toBe('Ana & Bo');
     expect(params.get('p1dep')).toBe('0.6');
@@ -80,5 +86,21 @@ describe('stateToQuery / stateFromQuery', () => {
     const state = stateFromQuery('?term=10&p1=A&p1over=100&p1from=500')!;
     expect(state.people[0].overpaymentStartMonth).toBe(120);
     expect(state.people[0].overpaymentMonthly).toBe(100);
+  });
+
+  it('opens a link that has only lodger parameters', () => {
+    const state = stateFromQuery('?lodger=1&lrent=700');
+    expect(state).not.toBeNull();
+    expect(state).toMatchObject({ lodgerEnabled: true, lodgerRentMonthly: 700, lodgerMonths: 60 });
+  });
+
+  it('limits lodger values', () => {
+    expect(stateFromQuery('?lodger=yes&lrent=-5&lmonths=9999&term=10')).toMatchObject({
+      lodgerEnabled: false,
+      lodgerRentMonthly: 0,
+      lodgerMonths: 120,
+    });
+    expect(stateFromQuery('?lodger=1&lmonths=0')!.lodgerMonths).toBe(1);
+    expect(stateFromQuery('?lodger=1&lmonths=2.6')!.lodgerMonths).toBe(3);
   });
 });

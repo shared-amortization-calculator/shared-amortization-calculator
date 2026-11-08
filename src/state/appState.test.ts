@@ -24,6 +24,10 @@ describe('initialState', () => {
     expect(state.people.map((p) => p.name)).toEqual(['Person 1', 'Person 2']);
     expect(state.people.map((p) => p.paymentShare)).toEqual([0.5, 0.5]);
   });
+
+  it('starts with no lodger but £500 for 60 months ready', () => {
+    expect(initialState()).toMatchObject({ lodgerEnabled: false, lodgerRentMonthly: 500, lodgerMonths: 60 });
+  });
 });
 
 describe('addPerson', () => {
@@ -92,5 +96,15 @@ describe('toMortgageInputs', () => {
   it('passes fees added to the loan through', () => {
     const inputs = toMortgageInputs({ ...initialState(), feesAddedToLoan: 1500 });
     expect(inputs.feesAddedToLoan).toBe(1500);
+  });
+
+  it('passes no rent when the lodger box is unticked', () => {
+    expect(toMortgageInputs(initialState()).lodgerRentMonthly).toBe(0);
+  });
+
+  it('passes the rent and months when the lodger box is ticked', () => {
+    const inputs = toMortgageInputs({ ...initialState(), lodgerEnabled: true });
+    expect(inputs.lodgerRentMonthly).toBe(500);
+    expect(inputs.lodgerMonths).toBe(60);
   });
 });

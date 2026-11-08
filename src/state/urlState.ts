@@ -24,6 +24,9 @@ export function stateToQuery(state: AppState): string {
     term: String(state.termYears),
     cur: state.currency,
     mode: state.equityMode,
+    lodger: state.lodgerEnabled ? '1' : '0',
+    lrent: String(state.lodgerRentMonthly),
+    lmonths: String(state.lodgerMonths),
   });
   state.people.forEach((person, k) => {
     const p = `p${k + 1}`;
@@ -70,7 +73,7 @@ function readShares(params: URLSearchParams, people: Person[]): Person[] {
 export function stateFromQuery(search: string): AppState | null {
   const params = new URLSearchParams(search);
   const defaults = initialState();
-  const known = ['price', 'deposit', 'fees', 'rate', 'term', 'cur', 'mode', 'p1'];
+  const known = ['price', 'deposit', 'fees', 'rate', 'term', 'cur', 'mode', 'p1', 'lodger', 'lrent', 'lmonths'];
   if (!known.some((name) => params.has(name))) return null;
 
   const termYears = readNumber(params, 'term', defaults.termYears, 1, 40, true);
@@ -101,5 +104,8 @@ export function stateFromQuery(search: string): AppState | null {
     people: people.length > 0 ? readShares(params, people) : defaults.people,
     equityMode: EQUITY_MODES.find((m) => m === mode) ?? defaults.equityMode,
     currency: CURRENCIES.find((c) => c.code === cur)?.code ?? defaults.currency,
+    lodgerEnabled: params.get('lodger') === '1',
+    lodgerRentMonthly: readNumber(params, 'lrent', defaults.lodgerRentMonthly, 0),
+    lodgerMonths: readNumber(params, 'lmonths', defaults.lodgerMonths, 1, termYears * 12, true),
   };
 }
