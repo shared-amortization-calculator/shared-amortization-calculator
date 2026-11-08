@@ -7,6 +7,7 @@ export interface ChartProps {
   people: Person[];
   currency: CurrencyCode;
   animate: boolean;
+  lodgerTerm: string;
 }
 
 interface ChartFigureProps {

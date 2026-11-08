@@ -244,6 +244,29 @@ section {
   .slider-field__controls--paired > span:nth-of-type(2) > input {
     grid-area: 2 / 3;
   }
+
+  .slider-field__controls--paired > .split-period {
+    grid-area: 3 / 1 / 4 / -1;
+  }
+}
+
+.split-period {
+  color: var(--muted);
+}
+
+.lodger-toggle {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.lodger-toggle input {
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  accent-color: var(--accent);
 }
 
 .field-row {
@@ -334,6 +357,13 @@ section {
 .headline dd {
   margin: 0;
   font-size: 1.5rem;
+}
+
+.headline-note {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: normal;
+  color: var(--muted);
 }
 
 figure {

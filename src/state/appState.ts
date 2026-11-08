@@ -14,6 +14,9 @@ export interface AppState {
   people: Person[];
   equityMode: EquityMode;
   currency: CurrencyCode;
+  lodgerEnabled: boolean;
+  lodgerRentMonthly: number;
+  lodgerMonths: number;
 }
 
 function createPerson(id: string, name: string): Person {
@@ -39,6 +42,9 @@ export function initialState(): AppState {
     people: equalizeShares([createPerson('p1', 'Person 1'), createPerson('p2', 'Person 2')]),
     equityMode: 'proportional',
     currency: 'GBP',
+    lodgerEnabled: false,
+    lodgerRentMonthly: 500,
+    lodgerMonths: 60,
   };
 }
 
@@ -76,5 +82,8 @@ export function toMortgageInputs(state: AppState): MortgageInputs {
     termYears: state.termYears,
     people: state.people,
     equityMode: state.equityMode,
+    // Unticking keeps the typed rent in state, but the engine sees no lodger.
+    lodgerRentMonthly: state.lodgerEnabled ? state.lodgerRentMonthly : 0,
+    lodgerMonths: state.lodgerMonths,
   };
 }

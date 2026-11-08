@@ -22,6 +22,14 @@ test('three people in fixed-share mode has no WCAG violations', async ({ page })
   await expectNoViolations(page);
 });
 
+test('a lodger with open data tables has no WCAG violations', async ({ page }) => {
+  await page.getByRole('checkbox', { name: 'We have a lodger' }).check();
+  for (const title of ['Equity over time', 'Loan balance over time', 'Paid in versus equity']) {
+    await page.getByRole('button', { name: `Show data table for ${title}` }).click();
+  }
+  await expectNoViolations(page);
+});
+
 test('open data tables have no WCAG violations', async ({ page }) => {
   for (const title of ['Equity over time', 'Loan balance over time', 'Paid in versus equity']) {
     await page.getByRole('button', { name: `Show data table for ${title}` }).click();

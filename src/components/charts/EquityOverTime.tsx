@@ -7,16 +7,18 @@ import { equityData, yearlyRows, yearTicks } from './chartData';
 import DataTable from './DataTable';
 import EndLabels from './EndLabels';
 import EndStats from './EndStats';
+import { lodgerArea, lodgerColumns, lodgerSentence } from './lodgerChart';
 import { GRID_COLOR, PERSON_COLORS, PERSON_DASHES, TEXT_COLOR } from './theme';
 
-export default function EquityOverTime({ result, people, currency, animate }: ChartProps) {
+export default function EquityOverTime({ result, people, currency, animate, lodgerTerm }: ChartProps) {
   const data = equityData(result);
   const names = people.map(displayName);
   const final = result.rows[result.rows.length - 1];
   const money = (v: number) => formatCurrency(v, currency);
   const summary =
     `Stacked area chart of each person's equity from the start to ${formatMonth(result.payoffMonth)}. ` +
-    `Final equity: ${names.map((n, k) => `${n} ${formatCurrency(final.people[k].equity, currency, { whole: true })}`).join(', ')}.`;
+    `Final equity: ${names.map((n, k) => `${n} ${formatCurrency(final.people[k].equity, currency, { whole: true })}`).join(', ')}.` +
+    lodgerSentence(result, lodgerTerm);
 
   return (
     <ChartFigure
@@ -27,6 +29,7 @@ export default function EquityOverTime({ result, people, currency, animate }: Ch
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} accessibilityLayer={false} margin={{ top: 24, right: 16, bottom: 8, left: 16 }}>
             <CartesianGrid stroke={GRID_COLOR} strokeDasharray="3 3" />
+            {lodgerArea(result, lodgerTerm, 'insideTopLeft')}
             <XAxis
               dataKey="month"
               type="number"
@@ -82,6 +85,7 @@ export default function EquityOverTime({ result, people, currency, animate }: Ch
           columns={[
             ...names.map((n, k) => ({ header: n, value: (r: ScheduleRow) => money(r.people[k].equity) })),
             { header: 'Total', value: (r: ScheduleRow) => money(r.totalEquity) },
+            ...lodgerColumns(result, lodgerTerm, money),
           ]}
         />
       }

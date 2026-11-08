@@ -21,6 +21,8 @@ export interface MortgageInputs {
   termYears: number;
   people: Person[];
   equityMode: EquityMode;
+  lodgerRentMonthly: number;
+  lodgerMonths: number;
 }
 
 export interface PersonMonth {
@@ -38,6 +40,8 @@ export interface ScheduleRow {
   overpaymentPrincipal: number;
   closingBalance: number;
   totalEquity: number;
+  lodgerPaid: number;
+  cumulativeLodgerPaid: number;
   people: PersonMonth[];
 }
 
@@ -45,5 +49,8 @@ export interface ScheduleResult {
   monthlyPayment: number;
   totalInterest: number;
   payoffMonth: number;
+  totalLodgerPaid: number;
+  // The last month with lodger rent applied, or 0 when there is none.
+  lodgerEndMonth: number;
   rows: ScheduleRow[];
 }

@@ -179,3 +179,101 @@ describe('computeSchedule', () => {
     }
   });
 });
+
+describe('lodger rent', () => {
+  // Hand case: £100/month at 0%, A pays 75% and B 25%, deposits 200/100.
+  const withLodger = (equityMode: EquityMode, rent = 40, months = 6, overrides: Partial<MortgageInputs> = {}) => ({
+    ...handCase(equityMode),
+    lodgerRentMonthly: rent,
+    lodgerMonths: months,
+    ...overrides,
+  });
+  const overpayingA = (amount: number) => [
+    makePerson({ id: 'a', downPaymentShare: 2 / 3, paymentShare: 0.75, ownershipShare: 0.5, principalShare: 0.4, overpaymentMonthly: amount }),
+    makePerson({ id: 'b', downPaymentShare: 1 / 3, paymentShare: 0.25, ownershipShare: 0.5, principalShare: 0.6 }),
+  ];
+
+  it('changes nothing when there is no lodger', () => {
+    const result = computeSchedule(handCase('proportional'));
+    for (const row of result.rows) expect(row.lodgerPaid).toBe(0);
+    expect(result.totalLodgerPaid).toBe(0);
+    expect(result.lodgerEndMonth).toBe(0);
+  });
+
+  it('splits the remainder by payment share while the lodger pays', () => {
+    const result = computeSchedule(withLodger('proportional'));
+    expect(result.rows[1].people.map((p) => p.paidThisMonth)).toEqual([45, 15]);
+    expect(result.rows[7].people.map((p) => p.paidThisMonth)).toEqual([75, 25]);
+    expect(result.rows[1].lodgerPaid).toBe(40);
+    expect(result.rows[7].lodgerPaid).toBe(0);
+  });
+
+  it('stops the rent after the set months', () => {
+    const result = computeSchedule(withLodger('proportional'));
+    expect(result.totalLodgerPaid).toBeCloseTo(240, 9);
+    expect(result.lodgerEndMonth).toBe(6);
+    expect(result.rows[12].cumulativeLodgerPaid).toBeCloseTo(240, 9);
+  });
+
+  it("lowers each person's paid in", () => {
+    const final = computeSchedule(withLodger('proportional')).rows[12].people.map((p) => p.cumulativeContributed);
+    expect(final[0]).toBeCloseTo(920, 9);
+    expect(final[1]).toBeCloseTo(340, 9);
+  });
+
+  it("shares the lodger's part in the ratio paid in, in proportional mode", () => {
+    const month12 = equities(withLodger('proportional'), 12);
+    expect(month12[0]).toBeCloseTo((1500 * 920) / 1260, 9);
+    expect(month12[1]).toBeCloseTo((1500 * 340) / 1260, 9);
+  });
+
+  it.each([
+    ['fixed', [750, 750]],
+    ['depositBaseline', [1100, 400]],
+    ['lockedDeposit', [680, 820]],
+  ] as [EquityMode, number[]][])('leaves equity unchanged in %s mode', (mode, expected) => {
+    const month12 = equities(withLodger(mode), 12);
+    expect(month12[0]).toBeCloseTo(expected[0], 9);
+    expect(month12[1]).toBeCloseTo(expected[1], 9);
+  });
+
+  it.each(MODES)('%s: keeps equity summing to total equity', (mode) => {
+    const people = [
+      makePerson({ id: 'a', downPaymentShare: 2 / 3, paymentShare: 0.75, ownershipShare: 0.5, principalShare: 0.4, overpaymentMonthly: 30, overpaymentStartMonth: 3 }),
+      makePerson({ id: 'b', downPaymentShare: 1 / 3, paymentShare: 0.25, ownershipShare: 0.5, principalShare: 0.6 }),
+    ];
+    for (const row of computeSchedule(withLodger(mode, 40, 12, { people })).rows) {
+      const total = row.people.reduce((a, p) => a + p.equity, 0);
+      expect(total).toBeCloseTo(row.totalEquity, 9);
+    }
+  });
+
+  it('ignores rent above the payment', () => {
+    const result = computeSchedule(withLodger('proportional', 150, 12));
+    for (const row of result.rows) for (const p of row.people) expect(p.paidThisMonth).toBe(0);
+    expect(result.totalLodgerPaid).toBeCloseTo(1200, 9);
+  });
+
+  it('stops the rent when overpayments clear the loan early', () => {
+    const result = computeSchedule(withLodger('proportional', 40, 12, { people: overpayingA(100) }));
+    expect(result.payoffMonth).toBe(6);
+    expect(result.lodgerEndMonth).toBe(6);
+    expect(result.totalLodgerPaid).toBeCloseTo(240, 9);
+  });
+
+  it('caps the rent at a short final payment', () => {
+    const result = computeSchedule(withLodger('proportional', 40, 12, { people: overpayingA(70) }));
+    expect(result.payoffMonth).toBe(8);
+    expect(result.rows[8].lodgerPaid).toBeCloseTo(10, 9);
+    expect(result.totalLodgerPaid).toBeCloseTo(290, 9);
+  });
+
+  it('leaves the loan itself unchanged', () => {
+    const without = computeSchedule(handCase('proportional'));
+    const withRent = computeSchedule(withLodger('proportional', 40, 12));
+    expect(withRent.monthlyPayment).toBe(without.monthlyPayment);
+    expect(withRent.totalInterest).toBe(without.totalInterest);
+    expect(withRent.payoffMonth).toBe(without.payoffMonth);
+    expect(withRent.rows.map((r) => r.closingBalance)).toEqual(without.rows.map((r) => r.closingBalance));
+  });
+});

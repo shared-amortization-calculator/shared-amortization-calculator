@@ -16,7 +16,9 @@ import WarrantyNotice from './components/WarrantyNotice';
 import { useAmortizationSchedule } from './hooks/useAmortizationSchedule';
 import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion';
 import { useStoredFlag } from './hooks/useStoredFlag';
+import { lodgerTerm } from './format';
 import { initialState, type AppState } from './state/appState';
+import { lodgerActive, paymentAfterLodger } from './state/lodger';
 import { stateFromQuery, stateToQuery } from './state/urlState';
 
 const URL_UPDATE_DELAY_MS = 300;
@@ -34,7 +36,10 @@ export default function App() {
   const animate = !usePrefersReducedMotion();
   const [pinResults, setPinResults] = useStoredFlag('keepResultsInView');
   const patch = (p: Partial<AppState>) => setState((s) => ({ ...s, ...p }));
-  const chartProps = { result, people: state.people, currency: state.currency, animate };
+  const chartProps = { result, people: state.people, currency: state.currency, animate, lodgerTerm: lodgerTerm(state.currency) };
+  const lodger = lodgerActive(state)
+    ? { term: lodgerTerm(state.currency), afterRent: paymentAfterLodger(result.monthlyPayment, state) }
+    : null;
   const shareUrl = `${window.location.origin}${window.location.pathname}?${stateToQuery(state)}`;
 
   useEffect(() => {
@@ -60,7 +65,7 @@ export default function App() {
       <main id="main" className="page">
         <IntroNotice />
         <MortgageForm state={state} onPatch={patch} />
-        <PeopleControls state={state} monthlyPayment={result.monthlyPayment} update={setState} />
+        <PeopleControls state={state} result={result} update={setState} />
         <EquityModeSelector state={state} update={setState} />
         <WarrantyNotice />
         {/* The summary is its own section, a direct child of main, so when pinned it can stick
@@ -77,7 +82,7 @@ export default function App() {
               Keep results in view
             </label>
           </div>
-          <Results result={result} people={state.people} currency={state.currency} />
+          <Results result={result} people={state.people} currency={state.currency} lodger={lodger} />
         </section>
         <ContributedVsEquity {...chartProps} />
         <EquityOverTime {...chartProps} />

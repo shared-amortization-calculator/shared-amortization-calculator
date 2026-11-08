@@ -23,6 +23,8 @@ export function makeInputs(overrides: Partial<MortgageInputs> = {}): MortgageInp
     termYears: 30,
     people: [makePerson()],
     equityMode: 'proportional',
+    lodgerRentMonthly: 0,
+    lodgerMonths: 0,
     ...overrides,
   };
 }

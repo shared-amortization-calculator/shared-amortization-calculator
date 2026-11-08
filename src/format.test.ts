@@ -1,5 +1,34 @@
 import { describe, expect, it } from 'vitest';
-import { capitalize, currencySymbol, depositTerm, formatCurrency, formatMonth, formatPercent } from './format';
+import {
+  capitalize,
+  currencySymbol,
+  depositTerm,
+  formatCurrency,
+  formatMonth,
+  formatMonthCount,
+  formatPercent,
+  lodgerTerm,
+} from './format';
+
+describe('lodgerTerm', () => {
+  it('says lodger for pounds, euros and Australian dollars and roommate for US dollars', () => {
+    expect(lodgerTerm('GBP')).toBe('lodger');
+    expect(lodgerTerm('EUR')).toBe('lodger');
+    expect(lodgerTerm('AUD')).toBe('lodger');
+    expect(lodgerTerm('USD')).toBe('roommate');
+  });
+});
+
+describe('formatMonthCount', () => {
+  it('counts months, adding years from twelve months on', () => {
+    expect(formatMonthCount(1)).toBe('1 month');
+    expect(formatMonthCount(6)).toBe('6 months');
+    expect(formatMonthCount(12)).toBe('12 months (1 year)');
+    expect(formatMonthCount(18)).toBe('18 months (1 year, 6 months)');
+    expect(formatMonthCount(60)).toBe('60 months (5 years)');
+    expect(formatMonthCount(61)).toBe('61 months (5 years, 1 month)');
+  });
+});
 
 describe('formatCurrency', () => {
   it('formats pounds, dollars and euros to the penny', () => {
