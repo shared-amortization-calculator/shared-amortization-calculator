@@ -36,7 +36,7 @@ export default function App() {
   const animate = !usePrefersReducedMotion();
   const [pinResults, setPinResults] = useStoredFlag('keepResultsInView');
   const patch = (p: Partial<AppState>) => setState((s) => ({ ...s, ...p }));
-  const chartProps = { result, people: state.people, currency: state.currency, animate };
+  const chartProps = { result, people: state.people, currency: state.currency, animate, lodgerTerm: lodgerTerm(state.currency) };
   const lodger = lodgerActive(state)
     ? { term: lodgerTerm(state.currency), afterRent: paymentAfterLodger(result.monthlyPayment, state) }
     : null;

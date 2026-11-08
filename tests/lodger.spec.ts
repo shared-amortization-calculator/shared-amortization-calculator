@@ -97,6 +97,34 @@ test('rent of zero shows no lodger results', async ({ page }) => {
   await expect(page.getByTestId('repaid-end-2')).toHaveCount(0);
 });
 
+const OVER_TIME = ['Equity over time', 'Loan balance over time'];
+
+test('the over-time charts show when the lodger paid', async ({ page }) => {
+  await tickLodger(page);
+  for (const name of OVER_TIME) {
+    const figure = page.getByRole('figure', { name });
+    await expect(figure.locator('.chart')).toHaveAccessibleName(/Lodger pays rent from the start to Year 5, month 12\.$/);
+    await expect(figure).toContainText('Lodger, months 1–60');
+  }
+  await page.getByRole('button', { name: 'Show data table for Equity over time' }).click();
+  const table = page.getByRole('table', { name: 'Equity by year' });
+  await expect(table.getByRole('columnheader', { name: 'Lodger paid in' })).toBeVisible();
+  await expect(table.getByRole('row', { name: /^Year 25, month 12/ })).toContainText('£30,000.00');
+});
+
+test('no lodger means no shading or column', async ({ page }) => {
+  for (const name of OVER_TIME) await expect(page.getByRole('figure', { name })).not.toContainText('Lodger,');
+  await page.getByRole('button', { name: 'Show data table for Loan balance over time' }).click();
+  const table = page.getByRole('table', { name: 'Loan balance by year' });
+  await expect(table.getByRole('columnheader', { name: 'Lodger paid in' })).toHaveCount(0);
+});
+
+test('US dollars label the charts roommate', async ({ page }) => {
+  await page.getByLabel('Currency').selectOption('USD');
+  await tickLodger(page, 'roommate');
+  await expect(page.getByRole('figure', { name: 'Equity over time' })).toContainText('Roommate, months 1–60');
+});
+
 test('US dollars say roommate', async ({ page }) => {
   await page.getByLabel('Currency').selectOption('USD');
   await tickLodger(page, 'roommate');
