@@ -76,5 +76,7 @@ export function toMortgageInputs(state: AppState): MortgageInputs {
     termYears: state.termYears,
     people: state.people,
     equityMode: state.equityMode,
+    lodgerRentMonthly: 0,
+    lodgerMonths: 0,
   };
 }

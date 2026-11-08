@@ -42,17 +42,27 @@ export function computeSchedule(inputs: MortgageInputs): ScheduleResult {
         regularPrincipal: 0,
         overpaymentPrincipal: 0,
         closingBalance: loan.loanAmount,
+        lodgerPaid: 0,
+        cumulativeLodgerPaid: 0,
       },
       people.map(() => 0),
     ),
   ];
 
   let totalInterest = 0;
+  let totalLodgerPaid = 0;
+  let lodgerEndMonth = 0;
   for (const m of loan.months) {
     totalInterest += m.interest;
-    const paid = people.map((p, k) => p.paymentShare * m.regularPayment + m.appliedOverpayments[k]);
+    // The rent covers part of the regular payment; the people split what is left.
+    const lodgerPaid = m.month <= inputs.lodgerMonths ? Math.min(inputs.lodgerRentMonthly, m.regularPayment) : 0;
+    const peopleRegular = m.regularPayment - lodgerPaid;
+    totalLodgerPaid += lodgerPaid;
+    if (lodgerPaid > 0) lodgerEndMonth = m.month;
+    const paid = people.map((p, k) => p.paymentShare * peopleRegular + m.appliedOverpayments[k]);
     people.forEach((p, k) => {
       contributed[k] += paid[k];
+      // Principal the rent covers is credited by the payment split, so this is unchanged by the lodger.
       principalPaid[k] += p.paymentShare * m.regularPrincipal + m.appliedOverpayments[k];
     });
     rows.push(
@@ -64,6 +74,8 @@ export function computeSchedule(inputs: MortgageInputs): ScheduleResult {
           regularPrincipal: m.regularPrincipal,
           overpaymentPrincipal: m.overpaymentPrincipal,
           closingBalance: m.closingBalance,
+          lodgerPaid,
+          cumulativeLodgerPaid: totalLodgerPaid,
         },
         paid,
       ),
@@ -74,6 +86,8 @@ export function computeSchedule(inputs: MortgageInputs): ScheduleResult {
     monthlyPayment: loan.monthlyPayment,
     totalInterest,
     payoffMonth: loan.months.length,
+    totalLodgerPaid,
+    lodgerEndMonth,
     rows,
   };
 }
